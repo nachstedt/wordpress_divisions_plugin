@@ -38,6 +38,12 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_action('admin_init', array(&$this, 'admin_init'));
 			add_action('admin_menu', array(&$this, 'add_menu'));
 			add_action('init', array(&$this, 'create_post_type'));
+			add_action('init', array(&$this, 'load_current_division'));
+			add_action('init', array(&$this, 'register_nav_menu_locations'));
+			add_action('init', array(&$this, 'register_sidebars'));
+
+			// register filters
+			add_filter('post_link', array(&$this, 'modify_link'), 1, 2);
 		}
 
 		/**
@@ -106,8 +112,36 @@ if(!class_exists('TN_Divisions_Plugin'))
 					),
 					'rewrite'              => false,
 					'register_meta_box_cb' => array(&$this, 'meta_box_callback')
-			)
+				)
 			);
+		}
+
+		public function load_current_division() {
+			$id = array_key_exists('division', $_GET) ? $_GET['division'] : "0";
+			if (get_post_type($id) == 'dvs_divisions' && get_post_status($id) == 'publish') {
+				$this->current_division = get_post($id);
+				echo get_post_status($id);
+			} else {
+				$this->current_division  =get_posts(array(
+					'post_type'      => 'dvs_divisions',
+					'post_status'    => 'publish',
+					'posts_per_page' => 1,
+					'paged'          => 0,
+					'orderby'        => 'ID',
+					'order'          => 'ASC',
+				))[0];
+			};
+			echo 'current division is ' . $this->current_division->post_title;
+		}
+
+		public function get_divisions() {
+			$divisions = get_posts(array(
+				'post_type'      => 'dvs_divisions',
+				'post_status'    => 'publish',
+				'orderby'        => 'post_title',
+				'order'          => 'ASC',
+			));
+			return $divisions;
 		}
 
 		public function meta_box_callback()
@@ -115,6 +149,55 @@ if(!class_exists('TN_Divisions_Plugin'))
 			echo '<style>#edit-slug-box{display:none;}</style>';
 			#remove_meta_box('submitdiv', 'dvs_divisions', 'side');
 			remove_meta_box('slugdiv', 'dvs_divisions', 'side');
+		}
+
+		public function modify_link($permalink_url, $post_data)  {
+			return add_query_arg(
+					'division',
+					$this->get_current_division(),
+					$permalink_url);
+		}
+
+		public function register_nav_menu_locations()
+		{
+			$original_locations = get_registered_nav_menus();
+
+			$divisions = $this->get_divisions();
+			foreach ($divisions as $division)
+			{
+				foreach ($original_locations as $name => $description)
+				{
+					register_nav_menu(
+						$name . '_division_' . $division->ID,
+						$description . __(" for ") . $division->post_title );
+				}
+			}
+		}
+
+		public function register_sidebars()
+		{
+			global $wp_registered_sidebars;
+			$original_sidebars = $wp_registered_sidebars;
+			$divisions = $this->get_divisions();
+			foreach ($divisions as $division)
+			{
+				foreach ($original_sidebars as $sidebar)
+				{
+					echo $sidebar['id'];
+					register_sidebar(array(
+						'name' => "{$sidebar['name']} {$division->post_title}",
+						'id' => "{$sidebar['id']}_{$division->ID}",
+						'description' => "{$sidebar['description']} "
+							. __( "Only displayed when division "
+							."{$division->post_title} is active"),
+						'class' => $sidebar['class'],
+						'before_widget' => $sidebar['before_widget'],
+						'after_widget' => $sidebar['after_widget'],
+						'before_title' => $sidebar['before_title'],
+						'after_title' => $sidebar['after_title'],
+					));
+				}
+			}
 		}
 
 		/**
@@ -170,10 +253,21 @@ if(!class_exists('TN_Divisions_Plugin'))
 			echo 'Some help text goes here.';
 		}
 
-		function setting_callback( $args ) {
+		public function setting_callback( $args ) {
 			$name = esc_attr( $args['name'] );
 			$value = esc_attr( get_option( $name ) );
 			echo "<input type='text' name=$name value='$value' />";
+		}
+
+		public function get_current_division() {
+			if (array_key_exists('division', $_GET))
+			{
+				return $_GET['division'];
+			}
+			else
+			{
+				return 0;
+			}
 		}
 
 		/**
@@ -223,14 +317,7 @@ if(class_exists('TN_Divisions_Plugin'))
 	}
 }
 
-
 /*
-function modify_link($permalink_url, $post_data)  {
-	return add_query_arg('timo', 'super', $permalink_url);
-}
-
-
-add_filter('post_link', 'modify_link', 1, 2);
 
 function modify_menu($args) {
 	$args['menu']=3;
