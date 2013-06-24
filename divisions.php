@@ -34,16 +34,20 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function __construct()
 		{
+			require_once(
+				sprintf("%s/includes/dvs_division.php",dirname(__FILE__)));
+			dvs_Division::register_hooks();
+
 			// register actions
 			add_action('admin_init', array(&$this, 'admin_init'));
 			add_action('admin_menu', array(&$this, 'add_menu'));
-			add_action('init', array(&$this, 'create_post_type'));
 			add_action('init', array(&$this, 'load_current_division'));
 			add_action('init', array(&$this, 'register_nav_menu_locations'));
 			add_action('init', array(&$this, 'register_sidebars'));
 
 			// register filters
 			add_filter('post_link', array(&$this, 'modify_link'), 1, 2);
+
 		}
 
 		/**
@@ -91,31 +95,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// Possibly do additional admin_init tasks
 		}
 
-		public function create_post_type()
-		{
-			register_post_type(
-				'dvs_divisions',
-				array(
-					'labels'              => array(
-						'name' => __( 'Divisions' ),
-						'singular_name' => __( 'Division' )
-					),
-					'public'               => true,
-					'exclude_from_search'  => true,
-					'publicly_queryable'   => false,
-					'show_ui'              => true,
-					'show_in_nav_menus'    => false,
-					'show_in_menu'         => true,
-					'has_archive'          => false,
-					'supports'             => array(
-						'title',
-					),
-					'rewrite'              => false,
-					'register_meta_box_cb' => array(&$this, 'meta_box_callback')
-				)
-			);
-		}
-
 		public function load_current_division() {
 			$id = array_key_exists('division', $_GET) ? $_GET['division'] : "0";
 			if (get_post_type($id) == 'dvs_divisions' && get_post_status($id) == 'publish') {
@@ -136,19 +115,12 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function get_divisions() {
 			$divisions = get_posts(array(
-				'post_type'      => 'dvs_divisions',
+				'post_type'      => 'dvs_division',
 				'post_status'    => 'publish',
 				'orderby'        => 'post_title',
 				'order'          => 'ASC',
 			));
 			return $divisions;
-		}
-
-		public function meta_box_callback()
-		{
-			echo '<style>#edit-slug-box{display:none;}</style>';
-			#remove_meta_box('submitdiv', 'dvs_divisions', 'side');
-			remove_meta_box('slugdiv', 'dvs_divisions', 'side');
 		}
 
 		public function modify_link($permalink_url, $post_data)  {
@@ -183,7 +155,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			{
 				foreach ($original_sidebars as $sidebar)
 				{
-					echo $sidebar['id'];
 					register_sidebar(array(
 						'name' => "{$sidebar['name']} {$division->post_title}",
 						'id' => "{$sidebar['id']}_{$division->ID}",
