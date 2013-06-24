@@ -27,6 +27,9 @@ License: GPL2
 
 if(!class_exists('TN_Divisions_Plugin'))
 {
+
+	require_once(sprintf("%s/includes/dvs_division.php",dirname(__FILE__)));
+
 	class TN_Divisions_Plugin
 	{
 		/**
@@ -34,8 +37,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function __construct()
 		{
-			require_once(
-				sprintf("%s/includes/dvs_division.php",dirname(__FILE__)));
 			dvs_Division::register_hooks();
 
 			// register actions
@@ -132,12 +133,14 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function register_nav_menu_locations()
 		{
-			$original_locations = get_registered_nav_menus();
 
+			$this->original_nav_menu_locations = get_registered_nav_menus();
+
+			$originals = $this->original_nav_menu_locations;
 			$divisions = $this->get_divisions();
 			foreach ($divisions as $division)
 			{
-				foreach ($original_locations as $name => $description)
+				foreach ($originals as $name => $description)
 				{
 					register_nav_menu(
 						$name . '_division_' . $division->ID,
@@ -149,7 +152,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		public function register_sidebars()
 		{
 			global $wp_registered_sidebars;
-			$original_sidebars = $wp_registered_sidebars;
+			$this->original_sidebars = $wp_registered_sidebars;
 			$divisions = $this->get_divisions();
 			foreach ($divisions as $division)
 			{

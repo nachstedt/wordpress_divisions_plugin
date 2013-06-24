@@ -15,7 +15,6 @@ if(!class_exists('dvs_Division'))
 
 		public static function init()
 		{
-			echo 'HALLLO';
 			self::create_post_type();
 			add_action('save_post', array(__CLASS__, 'save_post'));
 		}
@@ -45,26 +44,18 @@ if(!class_exists('dvs_Division'))
 
 		public static function save_post($post_id)
 		{
-			if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-			{
-				return;
-			}
+			if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+			if(!$_POST['post_type'] == self::POST_TYPE) return;
+			if(!current_user_can('edit_post', $post_id)) return;
 
-			if( $_POST['post_type'] == self::POST_TYPE
-					&& current_user_can('edit_post', $post_id))
-			{
-				foreach(array('meta a', 'meta b', 'meta c') as $field_name)
-				{
-					update_post_meta(
-						$post_id,
-						$field_name,
-						$_POST[$field_name]);
-				}
-			}
-			else
-			{
-				return;
-			}
+			update_post_meta(
+				$post_id,
+				'replaced_nav_menus',
+				$_POST['replaced_nav_menus']);
+			update_post_meta(
+				$post_id,
+				'replaced_sidebars',
+				$_POST['replaced_sidebars']);
 		}
 
 		public static function admin_init()
@@ -74,21 +65,36 @@ if(!class_exists('dvs_Division'))
 
 		public static function add_meta_boxes()
 		{
-			// Add this metabox to every selected post
 			add_meta_box(
-				sprintf('wp_plugin_template_%s_section', self::POST_TYPE),
-				sprintf('%s Information', self::POST_NAME),
-				array(__CLASS__, 'add_inner_meta_boxes'),
+				self::POST_NAME ."_navigation_menus",
+				'Individual Navigation Menu Locations',
+				array(__CLASS__, 'render_nav_menus_metabox'),
+				self::POST_TYPE
+			);
+			add_meta_box(
+				self::POST_NAME . '_sidebars',
+				'Individual Sidebars',
+				array(__CLASS__, 'render_sidebars_metabox'),
 				self::POST_TYPE
 			);
 		}
 
-		public static function add_inner_meta_boxes($post)
+		public static function render_nav_menus_metabox($post)
 		{
-			include(sprintf(
-				"%s/../templates/%s_metabox.php",
-				dirname(__FILE__),
-				self::POST_TYPE));
+			global $tn_divisions_plugin;
+			$locations = $tn_divisions_plugin->original_nav_menu_locations;
+			$replaced_nav_menus = get_post_meta(
+					$post->ID, 'replaced_nav_menus',true);
+			include(dirname(__FILE__) . "/../templates/nav_menus_metabox.php");
+		}
+
+		public static function render_sidebars_metabox($post)
+		{
+			global $tn_divisions_plugin;
+			$sidebars = $tn_divisions_plugin->original_sidebars;
+			$replaced_sidebars = get_post_meta(
+					$post->ID, 'replaced_sidebars', true);
+			include(dirname(__FILE__) . "/../templates/sidebars_metabox.php");
 		}
 
 		public static function meta_box_callback()
