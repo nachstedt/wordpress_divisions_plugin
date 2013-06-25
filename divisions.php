@@ -37,33 +37,57 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function __construct()
 		{
+			// register installation and uninstallation hooks
+			register_activation_hook(__FILE__, array(&$this, 'activate'));
+			register_deactivation_hook(FILE__, array(&$this, 'deactivate'));
+
+			// register hooks for custom post type
 			dvs_Division::register_hooks();
 
 			// register actions
-			add_action('admin_init', array(&$this, 'admin_init'));
-			add_action('admin_menu', array(&$this, 'add_menu'));
-			add_action('init', array(&$this, 'load_current_division'));
-			add_action('init', array(&$this, 'register_nav_menu_locations'));
-			add_action('init', array(&$this, 'register_sidebars'));
+			add_action('init', array(&$this, 'init'));
+			add_action('admin_init', array($this, 'admin_init'));
+			add_action('admin_menu', array($this, 'admin_menu'));
 
 			// register filters
-			add_filter('post_link', array(&$this, 'modify_link'), 1, 2);
-
+			add_filter('post_link', array(&$this, 'post_link_filer'), 1, 2);
+			add_filter(
+				'plugin_action_links_' . plugin_basename(__FILE__),
+				array(&$this, 'plugin_action_links_filter'));
 		}
 
 		/**
-		 * add a menu
+		 * hook into WP's admin_init action hook
 		 */
-		public function add_menu()
+		public function admin_init()
+		{
+			$this->init_settings();
+		}
+
+		/**
+		 * hook into WP's init hook
+		 */
+		public function init()
+		{
+			$this->load_current_division();
+			$this->register_nav_menu_locations();
+			$this->register_sidebars();
+		}
+
+		/**
+		 * hook into WP's admin_menu hook
+		 */
+		public function admin_menu()
 		{
 			add_menu_page(
-				'Divisions Plugin Settings',          # title in browser title bar
-				'Division Plugin',                    # menu title
-				'manage_options',                     # required capability
-				'tn_divisions_plugin',                # menu slug
-				array(&$this, 'plugin_settings_page') # callback
+				'Divisions Plugin Settings',             # title in browser bar
+				'Divisions',                             # menu title
+				'manage_options',                        # required capability
+				'tn_division_plugin_settings',           # menu slug
+				array(&$this, 'settings_menu_callback')  # callback
 			);
 
+			/*
 			add_submenu_page(
 				'tn_divisions_plugin',                # parent_slug
 				'Division Plugin Settings',           # page_title
@@ -72,6 +96,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 				'tn_divisions_plugin',                # menu_slug (same as parent)
 				array(&$this, 'plugin_settings_page') # callback
 			);
+			*/
 
 			/*
 			add_submenu_page(
@@ -83,17 +108,22 @@ if(!class_exists('TN_Divisions_Plugin'))
 			array(&$this, 'manage_divisions')     # callback
 			);
 			*/
-
 		}
 
 		/**
-		 * hook into WP's admin_init action hook
+		 * Menu Callback
 		 */
-		public function admin_init()
+		public function settings_menu_callback()
 		{
-			// Set up the settings for this plugin
-			$this->init_settings();
-			// Possibly do additional admin_init tasks
+			if(!current_user_can('manage_options'))
+			{
+				wp_die(__(
+				'You do not have sufficient permissions to access this '
+					 .'page.'));
+			}
+
+			// Render the settings template
+			include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
 		}
 
 		public function load_current_division() {
@@ -111,7 +141,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 					'order'          => 'ASC',
 				))[0];
 			};
-			echo 'current division is ' . $this->current_division->post_title;
+			#echo 'current division is ' . $this->current_division->post_title;
 		}
 
 		public function get_divisions() {
@@ -124,7 +154,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			return $divisions;
 		}
 
-		public function modify_link($permalink_url, $post_data)  {
+		public function post_link_filter($permalink_url, $post_data)  {
 			return add_query_arg(
 					'division',
 					$this->get_current_division(),
@@ -156,7 +186,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			$divisions = $this->get_divisions();
 			foreach ($divisions as $division)
 			{
-				foreach ($original_sidebars as $sidebar)
+				foreach ($this->original_sidebars as $sidebar)
 				{
 					register_sidebar(array(
 						'name' => "{$sidebar['name']} {$division->post_title}",
@@ -177,7 +207,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		/**
 		 * Initialize some custom settings
 		 */
-		public function init_settings()
+		private function init_settings()
 		{
 			// register the settings for this plugin
 			register_setting('tn_divisions_plugin-settings', 'setting_a');
@@ -206,20 +236,13 @@ if(!class_exists('TN_Divisions_Plugin'))
 			);
 		}
 
-		/**
-		 * Menu Callback
-		 */
-		public function plugin_settings_page()
-		{
-			if(!current_user_can('manage_options'))
-			{
-				wp_die(__(
-					'You do not have sufficient permissions to access this '
-					.'page.'));
-			}
-
-			// Render the settings template
-			include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
+		public function plugin_action_links_filter($links) {
+			$settings_link =
+				'<a href="'
+				. get_bloginfo('wpurl')
+				. '/wp-admin/admin.php?page=tn_divisions_plugin">Settings</a>';
+			array_unshift($links, $settings_link);
+			return $links;
 		}
 
 		public function section_one_callback()
@@ -259,36 +282,14 @@ if(!class_exists('TN_Divisions_Plugin'))
 		{
 			// Do nothing
 		}
-
-	}
+	};
 }
 
 
 if(class_exists('TN_Divisions_Plugin'))
 {
-	// Installation and uninstallation hooks
-	register_activation_hook(
-		__FILE__, array('TN_Divisions_Plugin', 'activate'));
-	register_deactivation_hook(
-		__FILE__, array('TN_Divisions_Plugin', 'deactivate'));
-
 	// instantiate the plugin class
 	$tn_divisions_plugin = new TN_Divisions_Plugin();
-	if(isset($tn_divisions_plugin)) {
-		// Add the settings link to the plugins page
-		function plugin_settings_link($links) {
-			$settings_link =
-				'<a href="'
-				. get_bloginfo('wpurl')
-				. '/wp-admin/admin.php?page=tn_divisions_plugin">Settings</a>';
-			array_unshift($links, $settings_link);
-			return $links;
-		}
-		$plugin = plugin_basename(__FILE__);
-		add_filter("plugin_action_links_$plugin", 'plugin_settings_link');
-
-
-	}
 }
 
 /*
@@ -309,6 +310,7 @@ add_filter('theme_mod_nav_menu_locations', 'modify_locations', 1, 1);
 register_nav_menu("timo", __('Timos Menu'));
 
 */
+
 
 ?>
 
