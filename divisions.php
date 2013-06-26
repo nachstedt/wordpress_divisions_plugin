@@ -69,9 +69,12 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function init()
 		{
-			$this->load_current_division();
 			$this->register_nav_menu_locations();
 			$this->register_sidebars();
+			if (! is_admin())
+			{
+				$this->load_current_division();
+			}
 		}
 
 		/**
@@ -141,7 +144,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 					'order'          => 'ASC',
 				))[0];
 			};
-			#echo 'current division is ' . $this->current_division->post_title;
+			echo 'current division is ' . $this->current_division->post_title;
 		}
 
 		public function get_divisions()
