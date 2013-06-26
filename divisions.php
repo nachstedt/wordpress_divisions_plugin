@@ -144,14 +144,18 @@ if(!class_exists('TN_Divisions_Plugin'))
 			#echo 'current division is ' . $this->current_division->post_title;
 		}
 
-		public function get_divisions() {
-			$divisions = get_posts(array(
-				'post_type'      => 'dvs_division',
-				'post_status'    => 'publish',
-				'orderby'        => 'post_title',
-				'order'          => 'ASC',
-			));
-			return $divisions;
+		public function get_divisions()
+		{
+			if ( !isset($this->divisions) )
+			{
+				$this->divisions = get_posts(array(
+					'post_type'      => 'dvs_division',
+					'post_status'    => 'publish',
+					'orderby'        => 'post_title',
+					'order'          => 'ASC',
+				));
+			}
+			return $this->divisions;
 		}
 
 		public function post_link_filter($permalink_url, $post_data)  {
@@ -163,18 +167,20 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function register_nav_menu_locations()
 		{
-
 			$this->original_nav_menu_locations = get_registered_nav_menus();
 
 			$originals = $this->original_nav_menu_locations;
 			$divisions = $this->get_divisions();
 			foreach ($divisions as $division)
 			{
+				$replaced = get_post_meta($division->ID, 'replaced_nav_menus', True);
 				foreach ($originals as $name => $description)
 				{
-					register_nav_menu(
-						$name . '_division_' . $division->ID,
-						$description . __(" for ") . $division->post_title );
+					if (in_array($name, $replaced)) {
+						register_nav_menu(
+							$name . '_division_' . $division->ID,
+							$description . __(" for ") . $division->post_title );
+					}
 				}
 			}
 		}
