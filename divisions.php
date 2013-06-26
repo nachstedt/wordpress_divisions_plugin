@@ -39,7 +39,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		{
 			// register installation and uninstallation hooks
 			register_activation_hook(__FILE__, array(&$this, 'activate'));
-			register_deactivation_hook(FILE__, array(&$this, 'deactivate'));
+			register_deactivation_hook(__FILE__, array(&$this, 'deactivate'));
 
 			// register hooks for custom post type
 			dvs_Division::register_hooks();
@@ -195,20 +195,23 @@ if(!class_exists('TN_Divisions_Plugin'))
 			$divisions = $this->get_divisions();
 			foreach ($divisions as $division)
 			{
+				$replaced = get_post_meta($division->ID, 'replaced_sidebars', True);
 				foreach ($this->original_sidebars as $sidebar)
 				{
-					register_sidebar(array(
-						'name' => "{$sidebar['name']} {$division->post_title}",
-						'id' => "{$sidebar['id']}_{$division->ID}",
-						'description' => "{$sidebar['description']} "
-							. __( "Only displayed when division "
-							."{$division->post_title} is active"),
-						'class' => $sidebar['class'],
-						'before_widget' => $sidebar['before_widget'],
-						'after_widget' => $sidebar['after_widget'],
-						'before_title' => $sidebar['before_title'],
-						'after_title' => $sidebar['after_title'],
-					));
+					if (in_array($sidebar['id'], $replaced)){
+						register_sidebar(array(
+							'name' => "{$sidebar['name']} {$division->post_title}",
+							'id' => "{$sidebar['id']}_{$division->ID}",
+							'description' => "{$sidebar['description']} "
+								. __( "Only displayed when division "
+								."{$division->post_title} is active"),
+							'class' => $sidebar['class'],
+							'before_widget' => $sidebar['before_widget'],
+							'after_widget' => $sidebar['after_widget'],
+							'before_title' => $sidebar['before_title'],
+							'after_title' => $sidebar['after_title'],
+						));
+					}
 				}
 			}
 		}
