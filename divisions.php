@@ -49,6 +49,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_action('admin_init', array($this, 'admin_init'));
 			add_action('admin_menu', array($this, 'admin_menu'));
 
+			add_action( 'wp_edit_nav_menu_walker', array( $this, 'edit_nav_menu_walker' ) );
+			add_action( 'wp_update_nav_menu_item', array( $this, 'tocka_update_nav_menu_item' ), 10, 3 );
+
 			// register filters
 			add_filter('post_link', array(&$this, 'post_link_filer'), 1, 2);
 			add_filter(
@@ -276,6 +279,36 @@ if(!class_exists('TN_Divisions_Plugin'))
 			else
 			{
 				return 0;
+			}
+		}
+
+		function edit_nav_menu_walker( $walker ) {
+			//@TODO this should be loaded somewhere sooner...
+			require_once WP_PLUGIN_DIR . '/divisions/includes/tocka-nav-menu-walker.php';
+
+			// swap the menu walker class only if it's the default wp class (just in case)
+			if ( $walker === 'Walker_Nav_Menu_Edit' ) {
+				$walker = 'Tocka_Walker_Nav_Menu_Edit';
+			}
+			return $walker;
+		}
+
+
+		/**
+		 * Save post meta. Menu items are just posts of type "menu_item".
+		 *
+		 *
+		 * @param type $menu_id
+		 * @param type $menu_item_id
+		 * @param type $args
+		 */
+		function tocka_update_nav_menu_item($menu_id, $menu_item_id, $args) {
+
+			if ( isset( $_POST[ "tocka_menu_item_test_val_$menu_item_id" ] ) ) {
+				update_post_meta( $menu_item_id, 'tocka_menu_item_test_val', $_POST[ "tocka_menu_item_test_val_$menu_item_id" ] );
+			} else {
+				#mfmfmf("DEL");
+				delete_post_meta( $menu_item_id, 'tocka_menu_item_test_val' );
 			}
 		}
 
