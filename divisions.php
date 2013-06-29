@@ -306,8 +306,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if ( isset( $_POST[ "menu-item-division-enabled" ][$menu_item_id] ) ) {
 				update_post_meta( $menu_item_id, 'dvs_division_enabled', TRUE );
 			} else {
-				delete_post_meta( $menu_item_id, 'dvs_division_enabled' );
-			}
+				update_post_meta( $menu_item_id, 'dvs_division_enabled', FALSE );
+							}
 			if ( isset( $_POST[ "edit-menu-item-division" ][$menu_item_id] ) ) {
 				update_post_meta( $menu_item_id, 'dvs_division', $_POST[ "edit-menu-item-division" ][$menu_item_id] );
 			} else {
