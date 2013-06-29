@@ -30,27 +30,38 @@ class Divisions_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 		}
 
 		// fetch previously saved meta for the post (menu_item is just a post type)
-		$test_val = esc_attr( get_post_meta( $menu_item_id, 'tocka_menu_item_test_val', TRUE ) );
+		$division_enabled = esc_attr( get_post_meta( $menu_item_id, 'dvs_division_enabled', TRUE ) );
+		$chosen_division = esc_attr( get_post_meta( $menu_item_id, 'dvs_division', TRUE ) );
 
 		global $tn_divisions_plugin;
 		$divisions = $tn_divisions_plugin->get_divisions();
-		//var_dump($divisions);
 		$options = "";
 		foreach ($divisions as $division)
 		{
-			$options = $options . "<option>" . $division->post_title . "</option>";
+			$selected = $division->ID == $chosen_division ? " selected" : "";
+			$options = $options
+				. "<option value='{$division->ID}' $selected>"
+					. $division->post_title
+				. "</option>";
 		}
+
 
 		// by means of phpQuery magic, inject a new input field
 		$_li->find( '.field-link-target' )
 			->after(
 				"<p class='description'>"
-					."<label for='edit-menu-item-division-$menu_item_id'>"
-						."<input type='checkbox' id='edit-menu-item-division-$menu_item_id' name='menu-item-division[$menu_item_id]'>"
+					."<label for='edit-menu-item-division-enabled-$menu_item_id'>"
+						."<input type='checkbox' "
+								."id='edit-menu-item-division-enabled-$menu_item_id' "
+								."name='menu-item-division-enabled[$menu_item_id]' "
+								. ($division_enabled ? "checked" : "")
+								.">"
 							." Attach fixed division to this link: "
 						."</input>"
 					."</label>"
-					."<select>"
+					."<select "
+							."id='edit-menu-item-division-$menu_item_id' "
+							."name='edit-menu-item-division[$menu_item_id]'>"
 						.$options
 					."</select>"
 					.'</p>');

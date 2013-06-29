@@ -50,7 +50,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_action('admin_menu', array($this, 'admin_menu'));
 
 			add_action( 'wp_edit_nav_menu_walker', array( $this, 'edit_nav_menu_walker' ) );
-			add_action( 'wp_update_nav_menu_item', array( $this, 'tocka_update_nav_menu_item' ), 10, 3 );
+			add_action( 'wp_update_nav_menu_item', array( $this, 'update_nav_menu_item' ), 10, 3 );
 
 			// register filters
 			add_filter('post_link', array(&$this, 'post_link_filer'), 1, 2);
@@ -302,13 +302,16 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 * @param type $menu_item_id
 		 * @param type $args
 		 */
-		function tocka_update_nav_menu_item($menu_id, $menu_item_id, $args) {
-
-			if ( isset( $_POST[ "tocka_menu_item_test_val_$menu_item_id" ] ) ) {
-				update_post_meta( $menu_item_id, 'tocka_menu_item_test_val', $_POST[ "tocka_menu_item_test_val_$menu_item_id" ] );
+		function update_nav_menu_item($menu_id, $menu_item_id, $args) {
+			if ( isset( $_POST[ "menu-item-division-enabled" ][$menu_item_id] ) ) {
+				update_post_meta( $menu_item_id, 'dvs_division_enabled', TRUE );
 			} else {
-				#mfmfmf("DEL");
-				delete_post_meta( $menu_item_id, 'tocka_menu_item_test_val' );
+				delete_post_meta( $menu_item_id, 'dvs_division_enabled' );
+			}
+			if ( isset( $_POST[ "edit-menu-item-division" ][$menu_item_id] ) ) {
+				update_post_meta( $menu_item_id, 'dvs_division', $_POST[ "edit-menu-item-division" ][$menu_item_id] );
+			} else {
+				delete_post_meta( $menu_item_id, 'dvs_division' );
 			}
 		}
 
