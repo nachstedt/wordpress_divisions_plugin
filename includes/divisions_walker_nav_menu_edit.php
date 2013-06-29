@@ -2,10 +2,9 @@
 
 # code taken from: http://changeset.hr/blog/code/wordpress-menu-item-meta-fields
 
-if ( !class_exists( "Tocka_Walker_Nav_Menu_Edit" ) && class_exists( 'Walker_Nav_Menu_Edit' ) ):
+if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" ) && class_exists( 'Walker_Nav_Menu_Edit' ) ):
 
-class Tocka_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
-
+class Divisions_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 
 	function start_el(&$output, $item, $depth, $args) {
 
@@ -62,3 +61,6 @@ class Tocka_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 }
 
 endif;
+
+?>
+

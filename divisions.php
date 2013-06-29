@@ -284,11 +284,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		function edit_nav_menu_walker( $walker ) {
 			//@TODO this should be loaded somewhere sooner...
-			require_once WP_PLUGIN_DIR . '/divisions/includes/tocka-nav-menu-walker.php';
 
 			// swap the menu walker class only if it's the default wp class (just in case)
 			if ( $walker === 'Walker_Nav_Menu_Edit' ) {
-				$walker = 'Tocka_Walker_Nav_Menu_Edit';
+				require_once WP_PLUGIN_DIR . '/divisions/includes/divisions_walker_nav_menu_edit.php';
+				$walker = 'Divisions_Walker_Nav_Menu_Edit';
 			}
 			return $walker;
 		}
