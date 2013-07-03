@@ -62,6 +62,13 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'wp_setup_nav_menu_item',
 				array(&$this, 'setup_nav_menu_item_filter'));
+			add_filter(
+				'wp_nav_menu_args',
+				array(&$this, 'nav_menu_args_filter'));
+			add_filter(
+				'theme_mod_nav_menu_locations',
+				array(&$this, 'theme_mod_nav_menu_locations_filter'));
+
 		}
 
 		/**
@@ -116,7 +123,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 				'Divisions',                      # menu_title
 				'manage_options',                 # required capability
 				'tn_divisions_manage',            # menu_slug (same as parent)
-			array(&$this, 'manage_divisions')     # callback
+			array(^&$this, 'manage_divisions')     # callback
 			);
 			*/
 		}
@@ -128,6 +135,30 @@ if(!class_exists('TN_Divisions_Plugin'))
 			$division = $division_enabled ? $chosen_division : $this->get_current_division();
 			$menu_item->url = add_query_arg('division', $division, $menu_item->url);
 			return $menu_item;
+		}
+
+		public function nav_menu_args_filter($args)
+		{
+			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
+			$name = $args["theme_location"];
+			if (in_array($name, $replaced))
+			{
+				$this->load_current_division();
+				$args["theme_location"] = $name . '_division_' . $this->current_division->ID;
+			}
+			return $args;
+		}
+
+		public function theme_mod_nav_menu_locations_filter($args)
+		{
+			if (is_admin()) return $args;
+
+			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
+			foreach ($replaced as $name) {
+				if (! array_key_exists($name, $argas))
+					$args[$name] = -1;
+			}
+			return array_merge($args, $replaced);
 		}
 
 		/**
@@ -150,7 +181,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			$id = array_key_exists('division', $_GET) ? $_GET['division'] : "0";
 			if (get_post_type($id) == 'dvs_division' && get_post_status($id) == 'publish') {
 				$this->current_division = get_post($id);
-				echo get_post_status($id);
 			} else {
 				$this->current_division  =get_posts(array(
 					'post_type'      => 'dvs_division',
@@ -161,7 +191,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 					'order'          => 'ASC',
 				))[0];
 			};
-			echo 'current division is ' . $this->current_division->post_title;
 		}
 
 		public function get_divisions()
