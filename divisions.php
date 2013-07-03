@@ -53,10 +53,15 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_action( 'wp_update_nav_menu_item', array( $this, 'update_nav_menu_item' ), 10, 3 );
 
 			// register filters
-			add_filter('post_link', array(&$this, 'post_link_filer'), 1, 2);
+			add_filter(
+				'post_link',
+				array(&$this, 'post_link_filer'), 1, 2);
 			add_filter(
 				'plugin_action_links_' . plugin_basename(__FILE__),
 				array(&$this, 'plugin_action_links_filter'));
+			add_filter(
+				'wp_setup_nav_menu_item',
+				array(&$this, 'setup_nav_menu_item_filter'));
 		}
 
 		/**
@@ -116,6 +121,15 @@ if(!class_exists('TN_Divisions_Plugin'))
 			*/
 		}
 
+		public function setup_nav_menu_item_filter($menu_item)
+		{
+			$division_enabled = esc_attr( get_post_meta( $menu_item->ID, 'dvs_division_enabled', TRUE ) );
+			$chosen_division = esc_attr( get_post_meta( $menu_item->ID, 'dvs_division', TRUE ) );
+			$division = $division_enabled ? $chosen_division : $this->get_current_division();
+			$menu_item->url = add_query_arg('division', $division, $menu_item->url);
+			return $menu_item;
+		}
+
 		/**
 		 * Menu Callback
 		 */
@@ -134,12 +148,12 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function load_current_division() {
 			$id = array_key_exists('division', $_GET) ? $_GET['division'] : "0";
-			if (get_post_type($id) == 'dvs_divisions' && get_post_status($id) == 'publish') {
+			if (get_post_type($id) == 'dvs_division' && get_post_status($id) == 'publish') {
 				$this->current_division = get_post($id);
 				echo get_post_status($id);
 			} else {
 				$this->current_division  =get_posts(array(
-					'post_type'      => 'dvs_divisions',
+					'post_type'      => 'dvs_division',
 					'post_status'    => 'publish',
 					'posts_per_page' => 1,
 					'paged'          => 0,
@@ -304,9 +318,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		function update_nav_menu_item($menu_id, $menu_item_id, $args) {
 			if ( isset( $_POST[ "menu-item-division-enabled" ][$menu_item_id] ) ) {
-				update_post_meta( $menu_item_id, 'dvs_division_enabled', TRUE );
+				update_post_meta( $menu_item_id, 'dvs_division_enabled', 1 );
 			} else {
-				update_post_meta( $menu_item_id, 'dvs_division_enabled', FALSE );
+				update_post_meta( $menu_item_id, 'dvs_division_enabled', 0 );
 							}
 			if ( isset( $_POST[ "edit-menu-item-division" ][$menu_item_id] ) ) {
 				update_post_meta( $menu_item_id, 'dvs_division', $_POST[ "edit-menu-item-division" ][$menu_item_id] );
