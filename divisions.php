@@ -158,7 +158,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 				if (! array_key_exists($name, $argas))
 					$args[$name] = -1;
 			}
-			return array_merge($args, $replaced);
+			return $args;
 		}
 
 		/**
