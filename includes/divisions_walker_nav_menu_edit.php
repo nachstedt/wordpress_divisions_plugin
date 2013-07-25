@@ -72,6 +72,3 @@ class Divisions_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 }
 
 endif;
-
-?>
-
