@@ -223,7 +223,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 			foreach ($divisions as $division)
 			{
 				$replaced = get_post_meta($division->ID, 'replaced_nav_menus', True);
-				foreach ($originals as $name => $description)
+				if ($replaced=="") $replaced=array();
+                                foreach ($originals as $name => $description)
 				{
 					if (in_array($name, $replaced)) {
 						register_nav_menu(
@@ -242,7 +243,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 			foreach ($divisions as $division)
 			{
 				$replaced = get_post_meta($division->ID, 'replaced_sidebars', True);
-				foreach ($this->original_sidebars as $sidebar)
+				if ($replaced=="") $replaced=array();
+                                foreach ($this->original_sidebars as $sidebar)
 				{
 					if (in_array($sidebar['id'], $replaced)){
 						register_sidebar(array(
@@ -401,7 +403,3 @@ add_filter('theme_mod_nav_menu_locations', 'modify_locations', 1, 1);
 register_nav_menu("timo", __('Timos Menu'));
 
 */
-
-
-?>
-

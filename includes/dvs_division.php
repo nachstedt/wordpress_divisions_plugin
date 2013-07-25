@@ -85,7 +85,8 @@ if(!class_exists('dvs_Division'))
 			$locations = $tn_divisions_plugin->original_nav_menu_locations;
 			$replaced_nav_menus = get_post_meta(
 					$post->ID, 'replaced_nav_menus',true);
-			include(dirname(__FILE__) . "/../templates/nav_menus_metabox.php");
+			if ($replaced_nav_menus=='') $replaced_nav_menus=array();
+                        include(dirname(__FILE__) . "/../templates/nav_menus_metabox.php");
 		}
 
 		public static function render_sidebars_metabox($post)
@@ -94,16 +95,15 @@ if(!class_exists('dvs_Division'))
 			$sidebars = $tn_divisions_plugin->original_sidebars;
 			$replaced_sidebars = get_post_meta(
 					$post->ID, 'replaced_sidebars', true);
-			include(dirname(__FILE__) . "/../templates/sidebars_metabox.php");
+			if ($replaced_sidebars=='') $replaced_sidebars=array();
+                        include(dirname(__FILE__) . "/../templates/sidebars_metabox.php");
 		}
 
 		public static function meta_box_callback()
 		{
-			echo '<style>#edit-slug-box{display:none;}</style>';
+			#echo '<style>#edit-slug-box{display:none;}</style>';
 			#remove_meta_box('submitdiv', self::POST_TYPE, 'side');
 			remove_meta_box('slugdiv', self::POST_TYPE, 'normal');
 		}
 	};
 }
-
-?>
