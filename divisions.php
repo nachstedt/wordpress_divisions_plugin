@@ -55,7 +55,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// register filters
 			add_filter(
 				'post_link',
-				array(&$this, 'post_link_filer'), 1, 2);
+				array(&$this, 'post_link_filter'), 1, 2);
 			add_filter(
 				'plugin_action_links_' . plugin_basename(__FILE__),
 				array(&$this, 'plugin_action_links_filter'));
@@ -140,7 +140,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 		public function nav_menu_args_filter($args)
 		{
 			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
-			$name = $args["theme_location"];
+			if ($replaced=="") $replaced=array();
+                        $name = $args["theme_location"];
 			if (in_array($name, $replaced))
 			{
 				$this->load_current_division();
@@ -154,7 +155,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if (is_admin()) return $args;
 
 			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
-			foreach ($replaced as $name) {
+			if ($replaced=="") $replaced=array();
+                        foreach ($replaced as $name) {
 				if (! array_key_exists($name, $argas))
 					$args[$name] = -1;
 			}
