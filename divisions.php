@@ -157,7 +157,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
 			if ($replaced=="") $replaced=array();
                         foreach ($replaced as $name) {
-				if (! array_key_exists($name, $argas))
+				if (! array_key_exists($name, $args))
 					$args[$name] = -1;
 			}
 			return $args;
@@ -184,7 +184,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if (get_post_type($id) == 'dvs_division' && get_post_status($id) == 'publish') {
 				$this->current_division = get_post($id);
 			} else {
-				$this->current_division  =get_posts(array(
+				$this->current_division = get_posts(array(
 					'post_type'      => 'dvs_division',
 					'post_status'    => 'publish',
 					'posts_per_page' => 1,
