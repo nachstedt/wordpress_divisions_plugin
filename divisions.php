@@ -28,8 +28,9 @@ License: GPL2
 if(!class_exists('TN_Divisions_Plugin'))
 {
 
-	require_once(sprintf("%s/includes/dvs_division.php",dirname(__FILE__)));
-
+	require_once(sprintf("%s/includes/dvs_division.php", dirname(__FILE__)));
+    require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
+    
 	class TN_Divisions_Plugin
 	{
 		/**
@@ -41,13 +42,12 @@ if(!class_exists('TN_Divisions_Plugin'))
 			register_activation_hook(__FILE__, array(&$this, 'activate'));
 			register_deactivation_hook(__FILE__, array(&$this, 'deactivate'));
 
-			// register hooks for custom post type
+			// register hooks for plugin classes
 			dvs_Division::register_hooks();
-
+            dvs_Settings::register_hooks();
+            
 			// register actions
 			add_action('init', array(&$this, 'init'));
-			add_action('admin_init', array($this, 'admin_init'));
-			add_action('admin_menu', array($this, 'admin_menu'));
 
 			add_action( 'wp_edit_nav_menu_walker', array( $this, 'edit_nav_menu_walker' ) );
 			add_action( 'wp_update_nav_menu_item', array( $this, 'update_nav_menu_item' ), 10, 3 );
@@ -72,14 +72,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 		}
 
 		/**
-		 * hook into WP's admin_init action hook
-		 */
-		public function admin_init()
-		{
-			$this->init_settings();
-		}
-
-		/**
 		 * hook into WP's init hook
 		 */
 		public function init()
@@ -90,42 +82,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			{
 				$this->load_current_division();
 			}
-		}
-
-		/**
-		 * hook into WP's admin_menu hook
-		 */
-		public function admin_menu()
-		{
-			add_menu_page(
-				'Divisions Plugin Settings',             # title in browser bar
-				'Divisions',                             # menu title
-				'manage_options',                        # required capability
-				'tn_division_plugin_settings',           # menu slug
-				array(&$this, 'settings_menu_callback')  # callback
-			);
-
-			/*
-			add_submenu_page(
-				'tn_divisions_plugin',                # parent_slug
-				'Division Plugin Settings',           # page_title
-				'Division Plugin',                    # menu_title
-				'manage_options',                     # required capability
-				'tn_divisions_plugin',                # menu_slug (same as parent)
-				array(&$this, 'plugin_settings_page') # callback
-			);
-			*/
-
-			/*
-			add_submenu_page(
-				'tn_divisions_plugin',            # parent_slug
-				'Manage your Divisions',          # page_title
-				'Divisions',                      # menu_title
-				'manage_options',                 # required capability
-				'tn_divisions_manage',            # menu_slug (same as parent)
-			array(^&$this, 'manage_divisions')     # callback
-			);
-			*/
 		}
 
 		public function setup_nav_menu_item_filter($menu_item)
@@ -161,22 +117,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 					$args[$name] = -1;
 			}
 			return $args;
-		}
-
-		/**
-		 * Menu Callback
-		 */
-		public function settings_menu_callback()
-		{
-			if(!current_user_can('manage_options'))
-			{
-				wp_die(__(
-				'You do not have sufficient permissions to access this '
-					 .'page.'));
-			}
-
-			// Render the settings template
-			include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
 		}
 
 		public function load_current_division() {
@@ -266,38 +206,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 		}
 
-		/**
-		 * Initialize some custom settings
-		 */
-		private function init_settings()
-		{
-			// register the settings for this plugin
-			register_setting('tn_divisions_plugin-settings', 'setting_a');
-			register_setting('tn_divisions_plugin-settings', 'setting_b');
-			add_settings_section(
-				'section-one',                         # id
-				'Section One',                         # title
-				array(&$this, 'section_one_callback'), # callback
-				'tn_divisions_plugin'                  # menu slug
-			);
-			add_settings_field(
-				'setting_a',                         # field id
-				'Setting A',                         # display title
-				array(&$this, 'setting_callback'), # callback
-				'tn_divisions_plugin',               # menu slug
-				'section-one',                       # section id
-				array('name' => 'setting_a')        # callback args
-			);
-			add_settings_field(
-				'setting_b',                         # field id
-				'Setting B',                         # display title
-				array(&$this, 'setting_callback'), # callback
-				'tn_divisions_plugin',               # menu slug
-				'section-one',                       # section id
-				array('name' => 'setting_b')         # callback args
-			);
-		}
-
 		public function plugin_action_links_filter($links) {
 			$settings_link =
 				'<a href="'
@@ -305,17 +213,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 				. '/wp-admin/admin.php?page=tn_divisions_plugin">Settings</a>';
 			array_unshift($links, $settings_link);
 			return $links;
-		}
-
-		public function section_one_callback()
-		{
-			echo 'Some help text goes here.';
-		}
-
-		public function setting_callback( $args ) {
-			$name = esc_attr( $args['name'] );
-			$value = esc_attr( get_option( $name ) );
-			echo "<input type='text' name=$name value='$value' />";
 		}
 
 		public function get_current_division() {
@@ -386,22 +283,3 @@ if(class_exists('TN_Divisions_Plugin'))
 	// instantiate the plugin class
 	$tn_divisions_plugin = new TN_Divisions_Plugin();
 }
-
-/*
-
-function modify_menu($args) {
-	$args['menu']=3;
-	return $args;
-}
-
-add_action('wp_nav_menu_args', 'modify_menu', 1, 1);
-
-function modify_locations($args) {
-	return $args;
-}
-
-add_filter('theme_mod_nav_menu_locations', 'modify_locations', 1, 1);
-
-register_nav_menu("timo", __('Timos Menu'));
-
-*/
