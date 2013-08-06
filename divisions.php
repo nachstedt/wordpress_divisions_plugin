@@ -68,7 +68,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'theme_mod_nav_menu_locations',
 				array(&$this, 'theme_mod_nav_menu_locations_filter'));
-
+            add_filter(
+                'theme_mod_header_image',
+                 array(&$this, 'theme_mod_header_image_filter'));
 		}
 
 		/**
@@ -106,6 +108,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 			return $args;
 		}
 
+        public function theme_mod_header_image_filter($args)
+        {
+            return $args;
+        }
+        
 		public function theme_mod_nav_menu_locations_filter($args)
 		{
 			if (is_admin()) return $args;

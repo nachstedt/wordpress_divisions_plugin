@@ -77,6 +77,12 @@ if(!class_exists('dvs_Division'))
 				array(__CLASS__, 'render_sidebars_metabox'),
 				self::POST_TYPE
 			);
+            add_meta_box(
+                self::POST_NAME . '_header_image',
+                'Individual Header Image',
+                array(__CLASS__, 'render_header_image_metabox'),
+                self::POST_TYPE
+            );
 		}
 
 		public static function render_nav_menus_metabox($post)
@@ -99,6 +105,11 @@ if(!class_exists('dvs_Division'))
                         include(dirname(__FILE__) . "/../templates/sidebars_metabox.php");
 		}
 
+        public static function render_header_image_metabox($post)
+        {
+            echo "Hallo";
+        }
+        
 		public static function meta_box_callback()
 		{
 			#echo '<style>#edit-slug-box{display:none;}</style>';
