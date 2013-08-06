@@ -77,12 +77,12 @@ if(!class_exists('dvs_Division'))
 				array(__CLASS__, 'render_sidebars_metabox'),
 				self::POST_TYPE
 			);
-            add_meta_box(
-                self::POST_NAME . '_header_image',
-                'Individual Header Image',
-                array(__CLASS__, 'render_header_image_metabox'),
-                self::POST_TYPE
-            );
+			add_meta_box(
+				self::POST_NAME . '_header_image',
+				'Individual Header Image',
+				array(__CLASS__, 'render_header_image_metabox'),
+				self::POST_TYPE
+			);
 		}
 
 		public static function render_nav_menus_metabox($post)
@@ -92,7 +92,7 @@ if(!class_exists('dvs_Division'))
 			$replaced_nav_menus = get_post_meta(
 					$post->ID, 'replaced_nav_menus',true);
 			if ($replaced_nav_menus=='') $replaced_nav_menus=array();
-                        include(dirname(__FILE__) . "/../templates/nav_menus_metabox.php");
+			include(dirname(__FILE__) . "/../templates/nav_menus_metabox.php");
 		}
 
 		public static function render_sidebars_metabox($post)
@@ -102,14 +102,14 @@ if(!class_exists('dvs_Division'))
 			$replaced_sidebars = get_post_meta(
 					$post->ID, 'replaced_sidebars', true);
 			if ($replaced_sidebars=='') $replaced_sidebars=array();
-                        include(dirname(__FILE__) . "/../templates/sidebars_metabox.php");
+			include(dirname(__FILE__) . "/../templates/sidebars_metabox.php");
 		}
 
-        public static function render_header_image_metabox($post)
-        {
-            echo "Hallo";
-        }
-        
+		public static function render_header_image_metabox($post)
+		{
+			echo "Hallo";
+		}
+
 		public static function meta_box_callback()
 		{
 			#echo '<style>#edit-slug-box{display:none;}</style>';
