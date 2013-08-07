@@ -11,6 +11,8 @@ if(!class_exists('dvs_Division'))
 		{
 			add_action('init', array(__CLASS__, 'init'));
 			add_action('admin_init', array(__CLASS__, 'admin_init'));
+			add_action('admin_enqueue_scripts', array(__CLASS__,'admin_enqueue_scripts'));
+
 		}
 
 		public static function init()
@@ -56,11 +58,29 @@ if(!class_exists('dvs_Division'))
 				$post_id,
 				'replaced_sidebars',
 				$_POST['replaced_sidebars']);
+			update_post_meta(
+				$post_id,
+				'dvs_replace_header_image',
+				array_key_exists("dvs_replace_header_image", $_POST));
 		}
 
 		public static function admin_init()
 		{
 			add_action('add_meta_boxes', array(__CLASS__, 'add_meta_boxes'));
+		}
+
+		public static function admin_enqueue_scripts()
+		{
+			$screen = get_current_screen();
+			if ($screen->base=="post" && $screen->id == self::POST_TYPE)
+			{
+				wp_enqueue_media();
+				wp_register_script(
+					'custom_header_image_upload.js', 
+					WP_PLUGIN_URL.'/divisions/scripts/custom_header_image_upload.js', 
+					array('jquery'));
+				wp_enqueue_script('custom_header_image_upload.js');
+			}
 		}
 
 		public static function add_meta_boxes()
@@ -84,6 +104,7 @@ if(!class_exists('dvs_Division'))
 				self::POST_TYPE
 			);
 		}
+		
 
 		public static function render_nav_menus_metabox($post)
 		{
@@ -107,7 +128,8 @@ if(!class_exists('dvs_Division'))
 
 		public static function render_header_image_metabox($post)
 		{
-			echo "Hallo";
+			$replace_header_image = get_post_meta($post->ID, "dvs_replace_header_image", true);
+			include(dirname(__FILE__) . "/../templates/header_image_metabox.php");
 		}
 
 		public static function meta_box_callback()
