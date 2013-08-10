@@ -30,9 +30,12 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 	require_once(sprintf("%s/includes/dvs_division.php", dirname(__FILE__)));
     require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
-    
+
 	class TN_Divisions_Plugin
 	{
+
+		private $current_division = NULL;
+
 		/**
 		 * Construct the plugin object
 		 */
@@ -45,7 +48,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// register hooks for plugin classes
 			dvs_Division::register_hooks();
             dvs_Settings::register_hooks();
-            
+
 			// register actions
 			add_action('init', array(&$this, 'init'));
 
@@ -112,7 +115,7 @@ if(!class_exists('TN_Divisions_Plugin'))
         {
             return $args;
         }
-        
+
 		public function theme_mod_nav_menu_locations_filter($args)
 		{
 			if (is_admin()) return $args;
