@@ -25,19 +25,19 @@ jQuery(document).ready(function($){
 		//When a file is selected, grab the URL and set it as the text field's value
 		custom_uploader.on('select', function() {
 			attachment = custom_uploader.state().get('selection').first().toJSON();
-			$('#dvs_custom_header_image_url').val(attachment.url);
-			$('#dvs_custom_header_image').attr("src", attachment.url);
-			$('#dvs_custom_header_image').show();
+			$('#dvs_header_image_url').val(attachment.url);
+			$('#dvs_header_image').attr("src", attachment.url);
+			$('#dvs_header_image').show();
 		});
 
 		//Open the uploader dialog
 		custom_uploader.open();
 	});
-	
+
 	$('#dvs_discard_image_button').click(function(e) {
 		e.preventDefault();
-		$('#dvs_custom_header_image_url').val("");
-		$('#dvs_custom_header_image').hide();
+		$('#dvs_header_image_url').val("");
+		$('#dvs_header_image').hide();
 	});
 
 

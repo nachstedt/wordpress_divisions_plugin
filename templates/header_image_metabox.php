@@ -16,12 +16,12 @@
 		name="dvs_header_image_option" value="none"
 		<?php if ($header_image_option == "none") echo "checked" ?>/>
 <label for="dvs_header_image_option_none">
-	don't use header image
+	no header image
 </label>
 <br />
 <input id="dvs_upload_image_button" class="button" type="button" value="Choose Image" />
 <input id="dvs_discard_image_button" class="button" type="button" value="Discard Image" />
 <br />
-<img id="dvs_custom_header_image" src="" />
-<input id="dvs_custom_header_image_url" type="hidden"
-	   name="dvs_custom_header_image_url" value="http://" />
+<img id="dvs_header_image" src="<?php echo $header_image_url; ?>" />
+<input id="dvs_header_image_url" type="hidden"
+		name="dvs_header_image_url" value="<?php echo $header_image_url; ?>" />

@@ -62,6 +62,12 @@ if(!class_exists('dvs_Division'))
 				$post_id,
 				'dvs_header_image_option',
 				$_POST["dvs_header_image_option"]);
+			update_post_meta(
+				$post_id,
+				"dvs_header_image_url",
+				array_key_exists("dvs_header_image_url", $_POST)
+							? $_POST["dvs_header_image_url"]
+							: "");
 		}
 
 		public static function admin_init()
@@ -76,8 +82,8 @@ if(!class_exists('dvs_Division'))
 			{
 				wp_enqueue_media();
 				wp_register_script(
-					'custom_header_image_upload.js', 
-					WP_PLUGIN_URL.'/divisions/scripts/custom_header_image_upload.js', 
+					'custom_header_image_upload.js',
+					WP_PLUGIN_URL.'/divisions/scripts/custom_header_image_upload.js',
 					array('jquery'));
 				wp_enqueue_script('custom_header_image_upload.js');
 			}
@@ -104,7 +110,7 @@ if(!class_exists('dvs_Division'))
 				self::POST_TYPE
 			);
 		}
-		
+
 
 		public static function render_nav_menus_metabox($post)
 		{
@@ -129,6 +135,7 @@ if(!class_exists('dvs_Division'))
 		public static function render_header_image_metabox($post)
 		{
 			$header_image_option = get_post_meta($post->ID, "dvs_header_image_option", true);
+			$header_image_url = get_post_meta($post->ID, "dvs_header_image_url", true);
 			if (empty($header_image_option)) $header_image_option = "use_default";
 			include(dirname(__FILE__) . "/../templates/header_image_metabox.php");
 		}
