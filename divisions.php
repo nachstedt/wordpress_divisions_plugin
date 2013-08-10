@@ -91,8 +91,10 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function setup_nav_menu_item_filter($menu_item)
 		{
+			if (is_admin()) return $menu_item;
 			$division_enabled = esc_attr( get_post_meta( $menu_item->ID, 'dvs_division_enabled', TRUE ) );
 			$chosen_division = esc_attr( get_post_meta( $menu_item->ID, 'dvs_division', TRUE ) );
+			if ($chosen_division < 0) return $menu_item;
 			$division = $division_enabled ? $chosen_division : $this->get_current_division();
 			$menu_item->url = add_query_arg('division', $division, $menu_item->url);
 			return $menu_item;

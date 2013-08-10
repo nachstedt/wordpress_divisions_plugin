@@ -35,7 +35,9 @@ class Divisions_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 
 		global $tn_divisions_plugin;
 		$divisions = $tn_divisions_plugin->get_divisions();
-		$options = "";
+		$options = '<option value="-1" '
+			. ($chosen_divison == '-1' ? 'selected' : '') . '>'
+			.'-- No Division --</option>';
 		foreach ($divisions as $division)
 		{
 			$selected = $division->ID == $chosen_division ? " selected" : "";
