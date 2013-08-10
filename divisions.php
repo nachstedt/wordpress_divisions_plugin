@@ -74,6 +74,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'theme_mod_header_image',
 					array(&$this, 'theme_mod_header_image_filter'));
+			add_filter(
+				'wp_nav_menu_objects',
+				array($this, "nav_menu_objects_filter"));
+
+			}
 
 		/**
 		 * hook into WP's init hook
@@ -87,6 +92,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 				$this->load_current_division();
 			}
 		}
+
 
 		public function setup_nav_menu_item_filter($menu_item)
 		{
@@ -169,6 +175,31 @@ if(!class_exists('TN_Divisions_Plugin'))
 					$this->get_current_division(),
 					$permalink_url);
 		}
+
+		public function nav_menu_objects_filter($items)
+		{
+			foreach ($items as $item) {
+				if (in_array("current-menu-item", $item->classes)) {
+					$division_enabled = esc_attr(
+						get_post_meta( $item->ID, 'dvs_division_enabled', TRUE));
+					$chosen_division = esc_attr(
+						get_post_meta( $item->ID, 'dvs_division', TRUE ) );
+					if ($division_enabled
+							&& $chosen_division != $this->get_current_division())
+					{
+						$item->classes = array_diff(
+							$item->classes,
+							array(
+								"current-menu-item",
+								'page_item',
+								'page_item-' . $item->object_id,
+								'current_page_item'));
+					}
+				}
+			}
+			return $items;
+		}
+
 
 		public function register_nav_menu_locations()
 		{
