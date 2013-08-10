@@ -60,8 +60,8 @@ if(!class_exists('dvs_Division'))
 				$_POST['replaced_sidebars']);
 			update_post_meta(
 				$post_id,
-				'dvs_replace_header_image',
-				array_key_exists("dvs_replace_header_image", $_POST));
+				'dvs_header_image_option',
+				$_POST["dvs_header_image_option"]);
 		}
 
 		public static function admin_init()
@@ -128,7 +128,8 @@ if(!class_exists('dvs_Division'))
 
 		public static function render_header_image_metabox($post)
 		{
-			$replace_header_image = get_post_meta($post->ID, "dvs_replace_header_image", true);
+			$header_image_option = get_post_meta($post->ID, "dvs_header_image_option", true);
+			if (empty($header_image_option)) $header_image_option = "use_default";
 			include(dirname(__FILE__) . "/../templates/header_image_metabox.php");
 		}
 
