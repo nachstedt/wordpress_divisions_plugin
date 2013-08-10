@@ -111,10 +111,13 @@ if(!class_exists('TN_Divisions_Plugin'))
 			return $args;
 		}
 
-        public function theme_mod_header_image_filter($args)
-        {
-            return $args;
-        }
+		public function theme_mod_header_image_filter($args)
+		{
+			$option = get_post_meta($this->get_current_division(), "dvs_header_image_option", TRUE);
+			if ($option=="none") return "";
+			if ($option=="replace") return get_post_meta($this->get_current_division (), "dvs_header_image_url", TRUE);
+			return $args;
+		}
 
 		public function theme_mod_nav_menu_locations_filter($args)
 		{
