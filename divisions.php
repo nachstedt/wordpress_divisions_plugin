@@ -66,9 +66,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 				'wp_setup_nav_menu_item',
 				array(&$this, 'setup_nav_menu_item_filter'));
 			add_filter(
-				'wp_nav_menu_args',
-				array(&$this, 'nav_menu_args_filter'));
-			add_filter(
 				'theme_mod_nav_menu_locations',
 				array(&$this, 'theme_mod_nav_menu_locations_filter'));
 			add_filter(
@@ -105,19 +102,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			return $menu_item;
 		}
 
-		public function nav_menu_args_filter($args)
-		{
-			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
-			if ($replaced=="") $replaced=array();
-			$name = $args["theme_location"];
-			if (in_array($name, $replaced))
-			{
-				$this->load_current_division();
-				$args["theme_location"] = $name . '_division_' . $this->current_division->ID;
-			}
-			return $args;
-		}
-
 		public function theme_mod_header_image_filter($args)
 		{
 			$option = get_post_meta($this->get_current_division(), "dvs_header_image_option", TRUE);
@@ -129,12 +113,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 		public function theme_mod_nav_menu_locations_filter($args)
 		{
 			if (is_admin()) return $args;
-
 			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
 			if ($replaced=="") $replaced=array();
-				foreach ($replaced as $name) {
-				if (! array_key_exists($name, $args))
-					$args[$name] = -1;
+			foreach ($replaced as $name) {
+				$menu_id = $args[$name . '_division_' . $this->get_current_division()];
+				$args[$name] = $menu_id;
 			}
 			return $args;
 		}
