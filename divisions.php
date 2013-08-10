@@ -29,7 +29,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 {
 
 	require_once(sprintf("%s/includes/dvs_division.php", dirname(__FILE__)));
-    require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
+	require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
 
 	class TN_Divisions_Plugin
 	{
@@ -47,7 +47,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 			// register hooks for plugin classes
 			dvs_Division::register_hooks();
-            dvs_Settings::register_hooks();
+			dvs_Settings::register_hooks();
 
 			// register actions
 			add_action('init', array(&$this, 'init'));
@@ -71,10 +71,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'theme_mod_nav_menu_locations',
 				array(&$this, 'theme_mod_nav_menu_locations_filter'));
-            add_filter(
-                'theme_mod_header_image',
-                 array(&$this, 'theme_mod_header_image_filter'));
-		}
+			add_filter(
+				'theme_mod_header_image',
+					array(&$this, 'theme_mod_header_image_filter'));
 
 		/**
 		 * hook into WP's init hook
@@ -104,7 +103,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		{
 			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
 			if ($replaced=="") $replaced=array();
-                        $name = $args["theme_location"];
+			$name = $args["theme_location"];
 			if (in_array($name, $replaced))
 			{
 				$this->load_current_division();
@@ -127,7 +126,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
 			if ($replaced=="") $replaced=array();
-                        foreach ($replaced as $name) {
+				foreach ($replaced as $name) {
 				if (! array_key_exists($name, $args))
 					$args[$name] = -1;
 			}
@@ -181,7 +180,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			{
 				$replaced = get_post_meta($division->ID, 'replaced_nav_menus', True);
 				if ($replaced=="") $replaced=array();
-                                foreach ($originals as $name => $description)
+				foreach ($originals as $name => $description)
 				{
 					if (in_array($name, $replaced)) {
 						register_nav_menu(
@@ -201,7 +200,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			{
 				$replaced = get_post_meta($division->ID, 'replaced_sidebars', True);
 				if ($replaced=="") $replaced=array();
-                                foreach ($this->original_sidebars as $sidebar)
+				foreach ($this->original_sidebars as $sidebar)
 				{
 					if (in_array($sidebar['id'], $replaced)){
 						register_sidebar(array(
