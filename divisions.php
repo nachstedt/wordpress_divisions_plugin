@@ -74,7 +74,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'wp_nav_menu_objects',
 				array($this, "nav_menu_objects_filter"));
-
+			add_filter(
+				'term_link',
+				array($this, 'term_link_filter'));
 			}
 
 		/**
@@ -120,6 +122,14 @@ if(!class_exists('TN_Divisions_Plugin'))
 				$args[$name] = $menu_id;
 			}
 			return $args;
+		}
+
+		public function term_link_filter($url)
+		{
+			return add_query_arg(
+				'division',
+				$this->get_current_division(),
+				$url);
 		}
 
 		public function load_current_division() {
@@ -250,7 +260,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 			else
 			{
-				return 0;
+				return -1;
 			}
 		}
 
