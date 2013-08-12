@@ -52,8 +52,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// register actions
 			add_action('init', array(&$this, 'init'));
 
-			add_action( 'wp_edit_nav_menu_walker', array( $this, 'edit_nav_menu_walker' ) );
-			add_action( 'wp_update_nav_menu_item', array( $this, 'update_nav_menu_item' ), 10, 3 );
+			add_action( 'wp_edit_nav_menu_walker', array( &$this, 'edit_nav_menu_walker' ) );
+			add_action( 'wp_update_nav_menu_item', array( &$this, 'update_nav_menu_item' ), 10, 3 );
 
 			// register filters
 			add_filter(
@@ -101,6 +101,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if ($division_enabled && $chosen_division < 0) return $menu_item;
 			$division = $division_enabled ? $chosen_division : $this->get_current_division();
 			$menu_item->url = add_query_arg('division', $division, $menu_item->url);
+			if ($division_enabled && $division==$this->get_current_division())
+				$menu_item->classes[] = 'current-division-item';
 			return $menu_item;
 		}
 
