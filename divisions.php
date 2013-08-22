@@ -77,7 +77,10 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'term_link',
 				array($this, 'term_link_filter'));
-			}
+			add_filter(
+				'sidebars_widgets',
+				array($this, 'sidebars_widgets_filter'));
+		}
 
 		/**
 		 * hook into WP's init hook
@@ -91,7 +94,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 				$this->load_current_division();
 			}
 		}
-
 
 		public function setup_nav_menu_item_filter($menu_item)
 		{
@@ -295,6 +297,17 @@ if(!class_exists('TN_Divisions_Plugin'))
 			} else {
 				delete_post_meta( $menu_item_id, 'dvs_division' );
 			}
+		}
+
+		public function sidebars_widgets_filter($sidebar_widgets)
+		{
+			if (is_admin() || $this->current_division==NULL)
+					return $sidebar_widgets;
+			$replaced = get_post_meta($this->get_current_division(), "replaced_sidebars", TRUE);
+			if (empty($replaced)) $replaced = array();
+			foreach ($replaced as $sidebar)
+				$sidebar_widgets[$sidebar] = $sidebar_widgets[$sidebar . "_" . $this->get_current_division()];
+			return $sidebar_widgets;
 		}
 
 		/**
