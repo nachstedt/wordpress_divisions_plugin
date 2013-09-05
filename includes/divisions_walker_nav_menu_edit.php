@@ -4,8 +4,10 @@
 
 if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" ) && class_exists( 'Walker_Nav_Menu_Edit' ) ):
 
+require_once(sprintf("%s/dvs_constants.php", dirname(__FILE__)));	
+	
 class Divisions_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
-
+	
 	function start_el(&$output, $item, $depth, $args) {
 
 		// append next menu element to $output
@@ -30,8 +32,8 @@ class Divisions_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 		}
 
 		// fetch previously saved meta for the post (menu_item is just a post type)
-		$division_enabled = esc_attr( get_post_meta( $menu_item_id, 'dvs_division_enabled', TRUE ) );
-		$chosen_division = esc_attr( get_post_meta( $menu_item_id, 'dvs_division', TRUE ) );
+		$division_enabled = esc_attr( get_post_meta( $menu_item_id, dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION, TRUE ) );
+		$chosen_division = esc_attr( get_post_meta( $menu_item_id, dvs_Constants::NAV_MENU_DIVISION_OPTION, TRUE ) );
 
 		global $tn_divisions_plugin;
 		$divisions = $tn_divisions_plugin->get_divisions();

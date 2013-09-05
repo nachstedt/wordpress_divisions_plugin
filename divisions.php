@@ -30,6 +30,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 	require_once(sprintf("%s/includes/dvs_division.php", dirname(__FILE__)));
 	require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
+	require_once(sprintf("%s/includes/dvs_constants.php", dirname(__FILE__)));
 
 	class TN_Divisions_Plugin
 	{
@@ -98,28 +99,55 @@ if(!class_exists('TN_Divisions_Plugin'))
 		public function setup_nav_menu_item_filter($menu_item)
 		{
 			if (is_admin()) return $menu_item;
-			$division_enabled = esc_attr( get_post_meta( $menu_item->ID, 'dvs_division_enabled', TRUE ) );
-			$chosen_division = esc_attr( get_post_meta( $menu_item->ID, 'dvs_division', TRUE ) );
-			if ($division_enabled && $chosen_division < 0) return $menu_item;
-			$division = $division_enabled ? $chosen_division : $this->get_current_division();
-			$menu_item->url = add_query_arg('division', $division, $menu_item->url);
+			$division_enabled = esc_attr( get_post_meta( 
+				$menu_item->ID, 
+				dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION, 
+				TRUE ) );
+			$chosen_division = esc_attr( get_post_meta( 
+				$menu_item->ID, 
+				dvs_Constants::NAV_MENU_DIVISION_OPTION, 
+				TRUE ) );
+			if ($division_enabled)
+			{
+				if ($chosen_division <0 ) return $menu_item;
+				$division = $chosen_division; 
+			}
+			else
+			{
+				$division = $this->get_current_division();
+			}
+			$menu_item->url = add_query_arg(
+				dvs_Constants::QUERY_ARG_NAME_DIVISION, 
+				$division, 
+				$menu_item->url);
 			if ($division_enabled && $division==$this->get_current_division())
-				$menu_item->classes[] = 'current-division-item';
+				$menu_item->classes[] = 
+					dvs_Constants::CSS_CLASS_MENU_ITEM_CURRENT_DIVISION;
 			return $menu_item;
 		}
 
 		public function theme_mod_header_image_filter($args)
 		{
-			$option = get_post_meta($this->get_current_division(), "dvs_header_image_option", TRUE);
-			if ($option=="none") return "";
-			if ($option=="replace") return get_post_meta($this->get_current_division (), "dvs_header_image_url", TRUE);
+			$option = get_post_meta(
+				$this->get_current_division(), 
+				dvs_Constants::HEADER_IMAGE_MODE_OPTION, 
+				TRUE);
+			if ($option==dvs_Constants::HEADER_IMAGE_MODE_NO_IMAGE) return "";
+			if ($option==dvs_Constants::HEADER_IMAGE_MODE_REPLACE) 
+				return get_post_meta(
+					$this->get_current_division (), 
+					dvs_Constants::HEADER_IMAGE_URL_OPTION, 
+					TRUE);
 			return $args;
 		}
 
 		public function theme_mod_nav_menu_locations_filter($args)
 		{
 			if (is_admin()) return $args;
-			$replaced = get_post_meta($this->get_current_division(), "replaced_nav_menus", TRUE);
+			$replaced = get_post_meta(
+				$this->get_current_division(), 
+				dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION, 
+				TRUE);
 			if ($replaced=="") $replaced=array();
 			foreach ($replaced as $name) {
 				$menu_id = $args[$name . '_division_' . $this->get_current_division()];
@@ -131,24 +159,29 @@ if(!class_exists('TN_Divisions_Plugin'))
 		public function term_link_filter($url)
 		{
 			return add_query_arg(
-				'division',
+				dvs_Constants::QUERY_ARG_NAME_DIVISION,
 				$this->get_current_division(),
 				$url);
 		}
 
 		public function load_current_division() {
-			$id = array_key_exists('division', $_GET) ? $_GET['division'] : "0";
-			if (get_post_type($id) == 'dvs_division' && get_post_status($id) == 'publish') {
+			if (array_key_exists(dvs_Constants::QUERY_ARG_NAME_DIVISION, $_GET))
+				$id =  $_GET[dvs_Constants::QUERY_ARG_NAME_DIVISION];
+			else
+				$id = "0";
+			if (get_post_type($id) == dvs_Constants::DIVISION_POST_TYPE 
+					&& get_post_status($id) == 'publish') {
 				$this->current_division = get_post($id);
 			} else {
-				$this->current_division = get_posts(array(
-					'post_type'      => 'dvs_division',
+				$divisions = get_posts(array(
+					'post_type'      => dvs_Constants::DIVISION_POST_TYPE,
 					'post_status'    => 'publish',
 					'posts_per_page' => 1,
 					'paged'          => 0,
 					'orderby'        => 'ID',
 					'order'          => 'ASC',
-				))[0];
+				));
+				$this->current_division = $divisions[0];
 			};
 		}
 
@@ -157,7 +190,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if ( !isset($this->divisions) )
 			{
 				$this->divisions = get_posts(array(
-					'post_type'      => 'dvs_division',
+					'post_type'      => dvs_Constants::DIVISION_POST_TYPE,
 					'post_status'    => 'publish',
 					'orderby'        => 'post_title',
 					'order'          => 'ASC',
@@ -168,9 +201,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function post_link_filter($permalink_url, $post_data)  {
 			return add_query_arg(
-					'division',
-					$this->get_current_division(),
-					$permalink_url);
+				dvs_Constants::QUERY_ARG_NAME_DIVISION,
+				$this->get_current_division(),
+				$permalink_url);
 		}
 
 		public function nav_menu_objects_filter($items)
@@ -178,9 +211,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			foreach ($items as $item) {
 				if (in_array("current-menu-item", $item->classes)) {
 					$division_enabled = esc_attr(
-						get_post_meta( $item->ID, 'dvs_division_enabled', TRUE));
+						get_post_meta( $item->ID, dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION, TRUE));
 					$chosen_division = esc_attr(
-						get_post_meta( $item->ID, 'dvs_division', TRUE ) );
+						get_post_meta( $item->ID, dvs_Constants::NAV_MENU_DIVISION_OPTION, TRUE ) );
 					if ($division_enabled
 							&& $chosen_division != $this->get_current_division())
 					{
@@ -206,7 +239,10 @@ if(!class_exists('TN_Divisions_Plugin'))
 			$divisions = $this->get_divisions();
 			foreach ($divisions as $division)
 			{
-				$replaced = get_post_meta($division->ID, 'replaced_nav_menus', True);
+				$replaced = get_post_meta(
+					$division->ID, 
+					dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION, 
+					True);
 				if ($replaced=="") $replaced=array();
 				foreach ($originals as $name => $description)
 				{
@@ -287,15 +323,15 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 * @param type $args
 		 */
 		function update_nav_menu_item($menu_id, $menu_item_id, $args) {
-			if ( isset( $_POST[ "menu-item-division-enabled" ][$menu_item_id] ) ) {
-				update_post_meta( $menu_item_id, 'dvs_division_enabled', 1 );
+			if ( isset( $_POST[dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION ][$menu_item_id] ) ) {
+				update_post_meta( $menu_item_id, dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION, 1 );
 			} else {
-				update_post_meta( $menu_item_id, 'dvs_division_enabled', 0 );
+				update_post_meta( $menu_item_id, dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION, 0 );
 							}
 			if ( isset( $_POST[ "edit-menu-item-division" ][$menu_item_id] ) ) {
-				update_post_meta( $menu_item_id, 'dvs_division', $_POST[ "edit-menu-item-division" ][$menu_item_id] );
+				update_post_meta( $menu_item_id, dvs_Constants::NAV_MENU_DIVISION_OPTION, $_POST[ "edit-menu-item-division" ][$menu_item_id] );
 			} else {
-				delete_post_meta( $menu_item_id, 'dvs_division' );
+				delete_post_meta( $menu_item_id, dvs_Constants::NAV_MENU_DIVISION_OPTION );
 			}
 		}
 
