@@ -11,7 +11,7 @@ if(!class_exists('dvs_Settings'))
         {
             # register actions
 			add_action('admin_init', array(__CLASS__, 'admin_init'));
-			add_action('admin_menu', array(__CLASS__, 'admin_menu'));            
+			add_action('admin_menu', array(__CLASS__, 'admin_menu'));
         }
         
 		/**
