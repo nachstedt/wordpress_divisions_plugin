@@ -22,14 +22,13 @@ if(!class_exists('dvs_Settings'))
 			self::init_settings();
 		}
 
-        
 		/**
 		 * hook into WP's admin_menu hook
 		 */
 		public static function admin_menu()
 		{
 			add_submenu_page(
-                'edit.php?post_type='.dvs_Division::POST_TYPE,
+				'edit.php?post_type='.dvs_Constants::DIVISION_POST_TYPE,
 				'Divisions Plugin Settings',             # title in browser bar
 				'Settings',                              # menu title
 				'manage_options',                        # required capability

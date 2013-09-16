@@ -53,7 +53,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// register actions
 			add_action(
 					'init',
-					array(&$this, 'init'));
+					array(&$this, 'init_hook'));
 			add_action(
 					'wp_edit_nav_menu_walker',
 					array( &$this, 'edit_nav_menu_walker' ) );
@@ -91,14 +91,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 		/**
 		 * hook into WP's init hook
 		 */
-		public function init()
+		public function init_hook()
 		{
 			$this->register_nav_menu_locations();
 			$this->register_sidebars();
-			if (! is_admin())
-			{
-				$this->load_current_division();
-			}
+			if (! is_admin()) $this->load_current_division();
 		}
 
 		public function setup_nav_menu_item_filter($menu_item)
@@ -275,7 +272,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			{
 				$replaced = get_post_meta(
 					$division->ID, 
-					dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTIONS, 
+					dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION, 
 					True);
 				if ($replaced=="") $replaced=array();
 				foreach ($this->original_sidebars as $sidebar)
@@ -370,7 +367,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 					return $sidebar_widgets;
 			$replaced = get_post_meta(
 				$this->get_current_division(), 
-				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTIONS, TRUE);
+				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION, TRUE);
 			if (empty($replaced)) $replaced = array();
 			foreach ($replaced as $sidebar)
 				$sidebar_widgets[$sidebar] = 

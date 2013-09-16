@@ -2,6 +2,9 @@
 if(!class_exists('dvs_Division'))
 {
 
+	require_once(sprintf("%s/dvs_constants.php", dirname(__FILE__)));
+
+
 	class dvs_Division
 	{
 
@@ -60,7 +63,7 @@ if(!class_exists('dvs_Division'))
 				$_POST[dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION]);
 			update_post_meta(
 				$post_id,
-				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTIONS,
+				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION,
 				$_POST[dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION]);
 			update_post_meta(
 				$post_id,
@@ -160,7 +163,7 @@ if(!class_exists('dvs_Division'))
 		{
 			#echo '<style>#edit-slug-box{display:none;}</style>';
 			#remove_meta_box('submitdiv', self::POST_TYPE, 'side');
-			remove_meta_box('slugdiv', self::POST_TYPE, 'normal');
+			remove_meta_box('slugdiv', dvs_Constants::DIVISION_POST_TYPE, 'normal');
 		}
 	};
 }
