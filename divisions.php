@@ -98,6 +98,15 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if (! is_admin()) $this->load_current_division();
 		}
 
+		/**
+		 * Filter frontend output of navigtation menu items
+		 * 
+		 * This filter adds the divisions query argument to the URL the 
+		 * navigation menu items link to.
+		 * 
+		 * @param object $menu_item The menu item to modify
+		 * @return object The modified menu item
+		 */
 		public function setup_nav_menu_item_filter($menu_item)
 		{
 			if (is_admin()) return $menu_item;
@@ -111,6 +120,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 				TRUE ) );
 			if ($division_enabled)
 			{
+				// chosen_division <0 means "no division"
 				if ($chosen_division <0 ) return $menu_item;
 				$division = $chosen_division; 
 			}
@@ -128,7 +138,16 @@ if(!class_exists('TN_Divisions_Plugin'))
 			return $menu_item;
 		}
 
-		public function theme_mod_header_image_filter($args)
+		/**
+		 * Filter the URL of the header image
+		 *
+		 * This filter replaces the url of the header image if the current division
+		 * is configured accordingly.
+		 *
+		 * @param string $url original header image url
+		 * @return string modified header image url
+		 */
+		public function theme_mod_header_image_filter($url)
 		{
 			$option = get_post_meta(
 				$this->get_current_division(), 
@@ -140,24 +159,42 @@ if(!class_exists('TN_Divisions_Plugin'))
 					$this->get_current_division (), 
 					dvs_Constants::HEADER_IMAGE_URL_OPTION, 
 					TRUE);
-			return $args;
+			return $url;
 		}
 
-		public function theme_mod_nav_menu_locations_filter($args)
+		/**
+		 * Filter the mapping from nav menu location to menu
+		 * 
+		 * For frontend users, this replaces the original navigation menu for a
+		 * given location with the individual one of the current division.
+		 * 
+		 * @param array $menus Array with elements [location]=>menu_id
+		 * @return array modified menu location array
+		 */
+		public function theme_mod_nav_menu_locations_filter($menus)
 		{
-			if (is_admin()) return $args;
+			if (is_admin()) return $menus;
 			$replaced = get_post_meta(
 				$this->get_current_division(), 
 				dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION, 
 				TRUE);
 			if ($replaced=="") $replaced=array();
 			foreach ($replaced as $name) {
-				$menu_id = $args[$name . '_division_' . $this->get_current_division()];
-				$args[$name] = $menu_id;
+				$menu_id = $menus[$name . '_division_' . $this->get_current_division()];
+				$menus[$name] = $menu_id;
 			}
 			return $args;
 		}
 
+		/**
+		 * Filter permalinks for taxonomy archives
+		 * 
+		 * This filter adds a querz arg to the generated link to maintain the 
+		 * current division.
+		 * 
+		 * @param string $url original link url
+		 * @return string modified link url
+		 */
 		public function term_link_filter($url)
 		{
 			return add_query_arg(
@@ -166,6 +203,13 @@ if(!class_exists('TN_Divisions_Plugin'))
 				$url);
 		}
 
+		/**
+		 * Load the current division
+		 * 
+		 * This method determines the current division based on the submitted query
+		 * url and stores the division id into the current_division property.
+		 * 
+		 */
 		public function load_current_division() {
 			if (array_key_exists(dvs_Constants::QUERY_ARG_NAME_DIVISION, $_GET))
 				$id =  $_GET[dvs_Constants::QUERY_ARG_NAME_DIVISION];
@@ -187,6 +231,14 @@ if(!class_exists('TN_Divisions_Plugin'))
 			};
 		}
 
+		/**
+		 * Return an array of all available divisions
+		 * 
+		 * This method obtains all divisions from the database and buffers this
+		 * list for future requests.
+		 * 
+		 * @return array Array containing all divisions
+		 */
 		public function get_divisions()
 		{
 			if ( !isset($this->divisions) )
@@ -201,6 +253,12 @@ if(!class_exists('TN_Divisions_Plugin'))
 			return $this->divisions;
 		}
 
+		/**
+		 * 
+		 * @param type $permalink_url
+		 * @param type $post_data
+		 * @return type
+		 */
 		public function post_link_filter($permalink_url, $post_data)  {
 			return add_query_arg(
 				dvs_Constants::QUERY_ARG_NAME_DIVISION,
