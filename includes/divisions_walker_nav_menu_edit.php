@@ -5,11 +5,13 @@
 if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" )
 		&& class_exists( 'Walker_Nav_Menu_Edit' ) )
 {
-	require_once(sprintf("%s/dvs_constants.php", dirname(__FILE__)));	
+	require_once(sprintf("%s/dvs_constants.php", dirname(__FILE__)));
 
 	class Divisions_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 
-		function start_el(&$output, $item, $depth, $args) {
+		function start_el(&$output, $item, $depth=0, $args=array(),
+				$current_object_id=0)
+		{
 
 			// append next menu element to $output
 			parent::start_el($output, $item, $depth, $args);
@@ -39,7 +41,7 @@ if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" )
 			global $tn_divisions_plugin;
 			$divisions = $tn_divisions_plugin->get_divisions();
 			$options = '<option value="-1" '
-				. ($chosen_divison == '-1' ? 'selected' : '') . '>'
+				. ($chosen_division == '-1' ? 'selected' : '') . '>'
 				.'-- No Division --</option>';
 			foreach ($divisions as $division)
 			{
@@ -66,8 +68,8 @@ if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" )
 						."</label>"
 						."<select "
 								."id='edit-menu-item-division-$menu_item_id' "
-								."name='" 
-									. dvs_Constants::NAV_MENU_DIVISION_EDIT_NAME 
+								."name='"
+									. dvs_Constants::NAV_MENU_DIVISION_EDIT_NAME
 									. "[$menu_item_id]'>"
 							.$options
 						."</select>"

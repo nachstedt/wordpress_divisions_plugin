@@ -100,40 +100,40 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		/**
 		 * Filter frontend output of navigtation menu items
-		 * 
-		 * This filter adds the divisions query argument to the URL the 
+		 *
+		 * This filter adds the divisions query argument to the URL the
 		 * navigation menu items link to.
-		 * 
+		 *
 		 * @param object $menu_item The menu item to modify
 		 * @return object The modified menu item
 		 */
 		public function setup_nav_menu_item_filter($menu_item)
 		{
 			if (is_admin()) return $menu_item;
-			$division_enabled = esc_attr( get_post_meta( 
-				$menu_item->ID, 
-				dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION, 
+			$division_enabled = esc_attr( get_post_meta(
+				$menu_item->ID,
+				dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION,
 				TRUE ) );
-			$chosen_division = esc_attr( get_post_meta( 
-				$menu_item->ID, 
-				dvs_Constants::NAV_MENU_DIVISION_OPTION, 
+			$chosen_division = esc_attr( get_post_meta(
+				$menu_item->ID,
+				dvs_Constants::NAV_MENU_DIVISION_OPTION,
 				TRUE ) );
 			if ($division_enabled)
 			{
 				// chosen_division <0 means "no division"
 				if ($chosen_division <0 ) return $menu_item;
-				$division = $chosen_division; 
+				$division = $chosen_division;
 			}
 			else
 			{
 				$division = $this->get_current_division();
 			}
 			$menu_item->url = add_query_arg(
-				dvs_Constants::QUERY_ARG_NAME_DIVISION, 
-				$division, 
+				dvs_Constants::QUERY_ARG_NAME_DIVISION,
+				$division,
 				$menu_item->url);
 			if ($division_enabled && $division==$this->get_current_division())
-				$menu_item->classes[] = 
+				$menu_item->classes[] =
 					dvs_Constants::CSS_CLASS_MENU_ITEM_CURRENT_DIVISION;
 			return $menu_item;
 		}
@@ -150,24 +150,24 @@ if(!class_exists('TN_Divisions_Plugin'))
 		public function theme_mod_header_image_filter($url)
 		{
 			$option = get_post_meta(
-				$this->get_current_division(), 
-				dvs_Constants::HEADER_IMAGE_MODE_OPTION, 
+				$this->get_current_division(),
+				dvs_Constants::HEADER_IMAGE_MODE_OPTION,
 				TRUE);
 			if ($option==dvs_Constants::HEADER_IMAGE_MODE_NO_IMAGE) return "";
-			if ($option==dvs_Constants::HEADER_IMAGE_MODE_REPLACE) 
+			if ($option==dvs_Constants::HEADER_IMAGE_MODE_REPLACE)
 				return get_post_meta(
-					$this->get_current_division (), 
-					dvs_Constants::HEADER_IMAGE_URL_OPTION, 
+					$this->get_current_division (),
+					dvs_Constants::HEADER_IMAGE_URL_OPTION,
 					TRUE);
 			return $url;
 		}
 
 		/**
 		 * Filter the mapping from nav menu location to menu
-		 * 
+		 *
 		 * For frontend users, this replaces the original navigation menu for a
 		 * given location with the individual one of the current division.
-		 * 
+		 *
 		 * @param array $menus Array with elements [location]=>menu_id
 		 * @return array modified menu location array
 		 */
@@ -175,23 +175,23 @@ if(!class_exists('TN_Divisions_Plugin'))
 		{
 			if (is_admin()) return $menus;
 			$replaced = get_post_meta(
-				$this->get_current_division(), 
-				dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION, 
+				$this->get_current_division(),
+				dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION,
 				TRUE);
 			if ($replaced=="") $replaced=array();
 			foreach ($replaced as $name) {
 				$menu_id = $menus[$name . '_division_' . $this->get_current_division()];
 				$menus[$name] = $menu_id;
 			}
-			return $args;
+			return $menus;
 		}
 
 		/**
 		 * Filter permalinks for taxonomy archives
-		 * 
-		 * This filter adds a querz arg to the generated link to maintain the 
+		 *
+		 * This filter adds a querz arg to the generated link to maintain the
 		 * current division.
-		 * 
+		 *
 		 * @param string $url original link url
 		 * @return string modified link url
 		 */
@@ -205,17 +205,17 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		/**
 		 * Load the current division
-		 * 
+		 *
 		 * This method determines the current division based on the submitted query
 		 * url and stores the division id into the current_division property.
-		 * 
+		 *
 		 */
 		public function load_current_division() {
 			if (array_key_exists(dvs_Constants::QUERY_ARG_NAME_DIVISION, $_GET))
 				$id =  $_GET[dvs_Constants::QUERY_ARG_NAME_DIVISION];
 			else
 				$id = "0";
-			if (get_post_type($id) == dvs_Constants::DIVISION_POST_TYPE 
+			if (get_post_type($id) == dvs_Constants::DIVISION_POST_TYPE
 					&& get_post_status($id) == 'publish') {
 				$this->current_division = get_post($id);
 			} else {
@@ -233,10 +233,10 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		/**
 		 * Return an array of all available divisions
-		 * 
+		 *
 		 * This method obtains all divisions from the database and buffers this
 		 * list for future requests.
-		 * 
+		 *
 		 * @return array Array containing all divisions
 		 */
 		public function get_divisions()
@@ -254,7 +254,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		}
 
 		/**
-		 * 
+		 *
 		 * @param type $permalink_url
 		 * @param type $post_data
 		 * @return type
@@ -271,14 +271,14 @@ if(!class_exists('TN_Divisions_Plugin'))
 			foreach ($items as $item) {
 				if (in_array("current-menu-item", $item->classes)) {
 					$division_enabled = esc_attr(
-						get_post_meta( 
-							$item->ID, 
-							dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION, 
+						get_post_meta(
+							$item->ID,
+							dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION,
 							TRUE));
 					$chosen_division = esc_attr(
-						get_post_meta( 
-							$item->ID, 
-							dvs_Constants::NAV_MENU_DIVISION_OPTION, 
+						get_post_meta(
+							$item->ID,
+							dvs_Constants::NAV_MENU_DIVISION_OPTION,
 							TRUE ) );
 					if ($division_enabled
 							&& $chosen_division != $this->get_current_division())
@@ -306,8 +306,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 			foreach ($divisions as $division)
 			{
 				$replaced = get_post_meta(
-					$division->ID, 
-					dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION, 
+					$division->ID,
+					dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION,
 					True);
 				if ($replaced=="") $replaced=array();
 				foreach ($originals as $name => $description)
@@ -329,8 +329,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 			foreach ($divisions as $division)
 			{
 				$replaced = get_post_meta(
-					$division->ID, 
-					dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION, 
+					$division->ID,
+					dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION,
 					True);
 				if ($replaced=="") $replaced=array();
 				foreach ($this->original_sidebars as $sidebar)
@@ -374,11 +374,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 		}
 
 		function edit_nav_menu_walker( $walker ) {
-			// swap the menu walker class only if it's the default wp class (just in 
+			// swap the menu walker class only if it's the default wp class (just in
 			// case)
 			if ( $walker === 'Walker_Nav_Menu_Edit' ) {
-				require_once 
-					WP_PLUGIN_DIR 
+				require_once
+					WP_PLUGIN_DIR
 					. '/divisions/includes/divisions_walker_nav_menu_edit.php';
 				$walker = 'Divisions_Walker_Nav_Menu_Edit';
 			}
@@ -395,26 +395,26 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 * @param type $args
 		 */
 		function update_nav_menu_item($menu_id, $menu_item_id, $args) {
-			
-			$division_enabled = isset( 
+
+			$division_enabled = isset(
 				$_POST[dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION ][$menu_item_id]);
-			update_post_meta( 
-				$menu_item_id, 
-				dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION, 
+			update_post_meta(
+				$menu_item_id,
+				dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION,
 				$division_enabled );
-			
-			if ( isset( 
+
+			if ( isset(
 					$_POST[dvs_Constants::NAV_MENU_DIVISION_EDIT_NAME ][$menu_item_id] ) )
 			{
-				update_post_meta( 
-					$menu_item_id, 
-					dvs_Constants::NAV_MENU_DIVISION_OPTION, 
+				update_post_meta(
+					$menu_item_id,
+					dvs_Constants::NAV_MENU_DIVISION_OPTION,
 					$_POST[dvs_Constants::NAV_MENU_DIVISION_EDIT_NAME ][$menu_item_id] );
-			} 
-			else 
+			}
+			else
 			{
-				delete_post_meta( 
-					$menu_item_id, 
+				delete_post_meta(
+					$menu_item_id,
 					dvs_Constants::NAV_MENU_DIVISION_OPTION );
 			}
 		}
@@ -424,11 +424,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if (is_admin() || $this->current_division==NULL)
 					return $sidebar_widgets;
 			$replaced = get_post_meta(
-				$this->get_current_division(), 
+				$this->get_current_division(),
 				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION, TRUE);
 			if (empty($replaced)) $replaced = array();
 			foreach ($replaced as $sidebar)
-				$sidebar_widgets[$sidebar] = 
+				$sidebar_widgets[$sidebar] =
 					$sidebar_widgets[$sidebar . "_" . $this->get_current_division()];
 			return $sidebar_widgets;
 		}
