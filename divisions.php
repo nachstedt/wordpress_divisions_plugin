@@ -55,11 +55,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 					'init',
 					array(&$this, 'init_hook'));
 			add_action(
-					'wp_edit_nav_menu_walker',
-					array( &$this, 'edit_nav_menu_walker' ) );
-			add_action(
 					'wp_update_nav_menu_item',
-					array( &$this, 'update_nav_menu_item' ), 10, 3 );
+					array( &$this, 'wp_update_nav_menu_item_hook' ), 10, 3 );
 
 			// register filters
 			add_filter(
@@ -68,6 +65,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'plugin_action_links_' . plugin_basename(__FILE__),
 				array(&$this, 'plugin_action_links_filter'));
+			add_filter(
+					'wp_edit_nav_menu_walker',
+					array( &$this, 'wp_edit_nav_menu_walker_filter' ) );
 			add_filter(
 				'wp_setup_nav_menu_item',
 				array(&$this, 'setup_nav_menu_item_filter'));
@@ -93,9 +93,15 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function init_hook()
 		{
-			$this->register_nav_menu_locations();
 			$this->register_sidebars();
-			if (! is_admin()) $this->load_current_division();
+			if (is_admin())
+			{
+				$this->register_nav_menu_locations();
+			}
+			else
+			{
+				$this->load_current_division();
+			}
 		}
 
 		/**
@@ -254,10 +260,14 @@ if(!class_exists('TN_Divisions_Plugin'))
 		}
 
 		/**
+		 * Filter links to posts
 		 *
-		 * @param type $permalink_url
-		 * @param type $post_data
-		 * @return type
+		 * This method filters links to posts in page and adds the current division
+		 * as query argument
+		 *
+		 * @param string $permalink_url original post link url
+		 * @param array $post_data meta data of the linke post
+		 * @return string modified link url
 		 */
 		public function post_link_filter($permalink_url, $post_data)  {
 			return add_query_arg(
@@ -266,6 +276,16 @@ if(!class_exists('TN_Divisions_Plugin'))
 				$permalink_url);
 		}
 
+		/**
+		 * Filters frontend output of navigantion menu items
+		 *
+		 * This filter removes the css classes indicating the currently chosen
+		 * menu item in case the menu item is attached to a specific division which
+		 * is different from the current one.
+		 *
+		 * @param array $items Array of menu items and its properties
+		 * @return array Modified array of menu items
+		 */
 		public function nav_menu_objects_filter($items)
 		{
 			foreach ($items as $item) {
@@ -296,7 +316,14 @@ if(!class_exists('TN_Divisions_Plugin'))
 			return $items;
 		}
 
-
+		/**
+		 * Registers additional navigation menu locations
+		 *
+		 * This method registers the additional navigation menu locations based
+		 * on the selection of navigation menus to replace for all the divisions.
+		 * This method only needs to be called for the admin (backend) interface.
+		 *
+		 */
 		public function register_nav_menu_locations()
 		{
 			$this->original_nav_menu_locations = get_registered_nav_menus();
@@ -321,6 +348,16 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 		}
 
+		/**
+		 * Registers additional sidebars
+		 *
+		 * Based on the settings for all the divisions, this method registers the
+		 * additional sidebars used to replaced the original one.
+		 *
+		 * @global array $wp_registered_sidebars Array containing all registered
+		 *                                       sidebars
+		 *
+		 */
 		public function register_sidebars()
 		{
 			global $wp_registered_sidebars;
@@ -353,6 +390,12 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 		}
 
+		/**
+		 * Adds settings link to the plugin information shown on the plugin site
+		 *
+		 * @param array $links Original list of links to display
+		 * @return array Extended list of links to display
+		 */
 		public function plugin_action_links_filter($links) {
 			$settings_link =
 				'<a href="'
@@ -362,6 +405,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 			return $links;
 		}
 
+		/**
+		 * Return the id of the currently active division
+		 *
+		 * @return int index of current division or -1 if no division
+		 */
 		public function get_current_division() {
 			if (array_key_exists(dvs_Constants::QUERY_ARG_NAME_DIVISION, $_GET))
 			{
@@ -373,7 +421,18 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 		}
 
-		function edit_nav_menu_walker( $walker ) {
+		/**
+		 * Filter the used navigation menu walker
+		 *
+		 * This method modifies the walker used to display the navigation menu
+		 * in the admin interface (Menu Editor). It replaces the original walker
+		 * with a custom one that includes selections for a specific division for
+		 * every menu item.
+		 *
+		 * @param string $walker Class name of the original walker
+		 * @return string Class name of the modified walker
+		 */
+		function wp_edit_nav_menu_walker_filter( $walker ) {
 			// swap the menu walker class only if it's the default wp class (just in
 			// case)
 			if ( $walker === 'Walker_Nav_Menu_Edit' ) {
@@ -387,14 +446,17 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 
 		/**
-		 * Save post meta. Menu items are just posts of type "menu_item".
+		 * Save additional meta data of menu items
 		 *
+		 * This method hooks into the saving of menu items in the admin interface
+		 * and implements the logic to store the division specific options for every
+		 * mentu item
 		 *
-		 * @param type $menu_id
-		 * @param type $menu_item_id
-		 * @param type $args
+		 * @param int $menu_id Id of the menu the item is located in
+		 * @param int $menu_item_id Id of the menu item
+		 * @param array $args Additional data for the menu_item
 		 */
-		function update_nav_menu_item($menu_id, $menu_item_id, $args) {
+		function wp_update_nav_menu_item_hook($menu_id, $menu_item_id, $args) {
 
 			$division_enabled = isset(
 				$_POST[dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION ][$menu_item_id]);
@@ -419,6 +481,17 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 		}
 
+		/**
+		 * Modify the widgets displayed in the sidebar.
+		 *
+		 * This method replaces the widgets attached to the sidebars by the
+		 * counterparts attached to the correspondig replacement. THis makes only
+		 * sense for the frontend interface
+		 *
+		 * @param array $sidebar_widgets Original array of sidebar widgets
+		 * @return array Modified array of sidebar widgets
+		 *
+		 */
 		public function sidebars_widgets_filter($sidebar_widgets)
 		{
 			if (is_admin() || $this->current_division==NULL)
