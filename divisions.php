@@ -500,9 +500,13 @@ if(!class_exists('TN_Divisions_Plugin'))
 				$this->get_current_division(),
 				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION, TRUE);
 			if (empty($replaced)) $replaced = array();
-			foreach ($replaced as $sidebar)
-				$sidebar_widgets[$sidebar] =
-					$sidebar_widgets[$sidebar . "_" . $this->get_current_division()];
+			foreach ($replaced as $sidebar) {
+				$replaced_name = $sidebar . "_" . $this->get_current_division();
+				if (array_key_exists($replaced_name, $sidebar_widgets))
+				{
+					$sidebar_widgets[$sidebar] = $sidebar_widgets[$replaced_name];
+				}
+			}
 			return $sidebar_widgets;
 		}
 
