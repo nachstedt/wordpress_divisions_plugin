@@ -29,7 +29,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 {
 
 	require_once(sprintf("%s/includes/dvs_division.php", dirname(__FILE__)));
-	require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
+	#require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
 	require_once(sprintf("%s/includes/dvs_constants.php", dirname(__FILE__)));
 
 	class TN_Divisions_Plugin
@@ -48,7 +48,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 			// register hooks for plugin classes
 			dvs_Division::register_hooks();
-			dvs_Settings::register_hooks();
+			#dvs_Settings::register_hooks();
 
 			// register actions
 			add_action(
