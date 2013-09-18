@@ -93,6 +93,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function init_hook()
 		{
+			$this->check_for_updates();
 			$this->register_sidebars();
 			if (is_admin())
 			{
@@ -102,6 +103,23 @@ if(!class_exists('TN_Divisions_Plugin'))
 			{
 				$this->load_current_division();
 			}
+		}
+
+		/**
+		 * Check if plugin was updated and migrate plugin data if neccessary
+		 *
+		 * This method compares the version of the present plugin code with the
+		 * version string stored in the database, performs data updates if
+		 * neccessary.
+		 *
+		 */
+		public function check_for_updates()
+		{
+			$my_version = dvs_Constants::VERSION;
+			$db_version = get_option(dvs_Constants::DATABASE_VERSION_OPTION, NULL);
+			if ($my_version==$db_version)
+				return;
+			update_option(dvs_Constants::DATABASE_VERSION_OPTION, $my_version);
 		}
 
 		/**
