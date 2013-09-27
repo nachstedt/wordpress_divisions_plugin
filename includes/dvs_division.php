@@ -11,13 +11,13 @@ if(!class_exists('dvs_Division'))
 		public static function register_hooks()
 		{
 			add_action(
-				'init', 
+				'init',
 				array(__CLASS__, 'init'));
 			add_action(
-				'admin_init', 
+				'admin_init',
 				array(__CLASS__, 'admin_init'));
 			add_action(
-				'admin_enqueue_scripts', 
+				'admin_enqueue_scripts',
 				array(__CLASS__,'admin_enqueue_scripts'));
 
 		}
@@ -56,7 +56,7 @@ if(!class_exists('dvs_Division'))
 			if(!get_post_type($post_id) == dvs_Constants::DIVISION_POST_TYPE) return;
 			if(!current_user_can('edit_post', $post_id)) return;
 			if (empty($_POST)) return;
-			
+
 			update_post_meta(
 				$post_id,
 				dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION,
@@ -70,7 +70,7 @@ if(!class_exists('dvs_Division'))
 				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION,
 				array_key_exists(
 						dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION, $_POST)
-					? $_POST[dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION] 
+					? $_POST[dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION]
 					: array());
 
 			update_post_meta(
@@ -92,13 +92,14 @@ if(!class_exists('dvs_Division'))
 		public static function admin_enqueue_scripts()
 		{
 			$screen = get_current_screen();
-			if ($screen->base=="post" 
+			if ($screen->base=="post"
 					&& $screen->id == dvs_Constants::DIVISION_POST_TYPE)
 			{
 				wp_enqueue_media();
 				wp_register_script(
 					'custom_header_image_upload.js',
-					TN_DIVISIONS_SCRIPT_DIR . 'custom_header_image_upload.js',
+					TN_DIVISIONS_SCRIPT_DIR_URL
+					. 'custom_header_image_upload.js',
 					array('jquery'));
 				wp_enqueue_script('custom_header_image_upload.js');
 			}
@@ -132,7 +133,7 @@ if(!class_exists('dvs_Division'))
 			global $tn_divisions_plugin;
 			$locations = $tn_divisions_plugin->original_nav_menu_locations;
 			$replaced_nav_menus = get_post_meta(
-				$post->ID, 
+				$post->ID,
 				dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION,
 				true);
 			if ($replaced_nav_menus=='') $replaced_nav_menus=array();
@@ -144,7 +145,7 @@ if(!class_exists('dvs_Division'))
 			global $tn_divisions_plugin;
 			$sidebars = $tn_divisions_plugin->original_sidebars;
 			$replaced_sidebars = get_post_meta(
-				$post->ID, 
+				$post->ID,
 				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION,
 				true);
 			if ($replaced_sidebars=='') $replaced_sidebars=array();
@@ -154,14 +155,14 @@ if(!class_exists('dvs_Division'))
 		public static function render_header_image_metabox($post)
 		{
 			$header_image_option = get_post_meta(
-				$post->ID, 
+				$post->ID,
 				dvs_Constants::HEADER_IMAGE_MODE_OPTION,
 				true);
 			$header_image_url = get_post_meta(
-				$post->ID, 
-				dvs_Constants::HEADER_IMAGE_URL_OPTION, 
+				$post->ID,
+				dvs_Constants::HEADER_IMAGE_URL_OPTION,
 				true);
-			if (empty($header_image_option)) 
+			if (empty($header_image_option))
 				$header_image_option = dvs_Constants::HEADER_IMAGE_MODE_USE_DEFAULT;
 			include(TN_DIVISIONS_TEMPLATE_DIR . 'header_image_metabox.php');
 		}

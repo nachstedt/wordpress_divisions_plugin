@@ -35,15 +35,16 @@ if (!defined('TN_DIVISIONS_INCLUDE_DIR'))
 	define('TN_DIVISIONS_INCLUDE_DIR', TN_DIVISIONS_PLUGIN_DIR . 'includes/');
 }
 
-if (!defined('TN_DIVISIONS_SCRIPT_DIR'))
-{
-	define('TN_DIVISIONS_SCRIPT_DIR', TN_DIVISIONS_PLUGIN_DIR . 'scripts/');
-}
-
 if (!defined('TN_DIVISIONS_TEMPLATE_DIR'))
 {
 	define('TN_DIVISIONS_TEMPLATE_DIR', TN_DIVISIONS_PLUGIN_DIR . 'templates/');
 }
+
+if (!defined('TN_DIVISIONS_SCRIPT_DIR_URL'))
+{
+	define('TN_DIVISIONS_SCRIPT_DIR_URL', plugins_url('scripts/', __FILE__));
+}
+
 
 if(!class_exists('TN_Divisions_Plugin'))
 {
