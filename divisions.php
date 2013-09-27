@@ -3,7 +3,7 @@
 Plugin Name: Divisions
 Plugin URI: http://www.nachstedt.com/en/divisions-wordpress-plugin-en
 Description: Create multiple divisions in your site with individual menus, sidebars and header images. Divisions may easily change share content of all types while maintaining a consistent look.
-Version: 0.1.0
+Version: 0.1.1
 Author: Timo Nachstedt
 Author URI: http://www.nachstedt.com
 License: GPL2
@@ -25,12 +25,33 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+if (!defined('TN_DIVISIONS_PLUGIN_DIR'))
+{
+	define('TN_DIVISIONS_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
+}
+
+if (!defined('TN_DIVISIONS_INCLUDE_DIR'))
+{
+	define('TN_DIVISIONS_INCLUDE_DIR', TN_DIVISIONS_PLUGIN_DIR . 'includes/');
+}
+
+if (!defined('TN_DIVISIONS_TEMPLATE_DIR'))
+{
+	define('TN_DIVISIONS_TEMPLATE_DIR', TN_DIVISIONS_PLUGIN_DIR . 'templates/');
+}
+
+if (!defined('TN_DIVISIONS_SCRIPT_DIR_URL'))
+{
+	define('TN_DIVISIONS_SCRIPT_DIR_URL', plugins_url('scripts/', __FILE__));
+}
+
+
 if(!class_exists('TN_Divisions_Plugin'))
 {
 
-	require_once(sprintf("%s/includes/dvs_division.php", dirname(__FILE__)));
-	#require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
-	require_once(sprintf("%s/includes/dvs_constants.php", dirname(__FILE__)));
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_division.php');
+	#require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_settings.php');
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_constants.php');
 
 	class TN_Divisions_Plugin
 	{
@@ -62,9 +83,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'post_link',
 				array(&$this, 'post_link_filter'), 1, 2);
-			add_filter(
-				'plugin_action_links_' . plugin_basename(__FILE__),
-				array(&$this, 'plugin_action_links_filter'));
+//			add_filter(
+//				'plugin_action_links_' . plugin_basename(__FILE__),
+//				array(&$this, 'plugin_action_links_filter'));
 			add_filter(
 					'wp_edit_nav_menu_walker',
 					array( &$this, 'wp_edit_nav_menu_walker_filter' ) );
@@ -408,20 +429,20 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 		}
 
-		/**
-		 * Adds settings link to the plugin information shown on the plugin site
-		 *
-		 * @param array $links Original list of links to display
-		 * @return array Extended list of links to display
-		 */
-		public function plugin_action_links_filter($links) {
-			$settings_link =
-				'<a href="'
-				. get_bloginfo('wpurl')
-				. '/wp-admin/admin.php?page=tn_divisions_plugin">Settings</a>';
-			array_unshift($links, $settings_link);
-			return $links;
-		}
+//		/**
+//		 * Adds settings link to the plugin information shown on the plugin site
+//		 *
+//		 * @param array $links Original list of links to display
+//		 * @return array Extended list of links to display
+//		 */
+//		public function plugin_action_links_filter($links) {
+//			$settings_link =
+//				'<a href="'
+//				. get_bloginfo('wpurl')
+//				. '/wp-admin/admin.php?page=tn_divisions_plugin">Settings</a>';
+//			array_unshift($links, $settings_link);
+//			return $links;
+//		}
 
 		/**
 		 * Return the id of the currently active division
@@ -454,9 +475,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// swap the menu walker class only if it's the default wp class (just in
 			// case)
 			if ( $walker === 'Walker_Nav_Menu_Edit' ) {
-				require_once
-					WP_PLUGIN_DIR
-					. '/divisions/includes/divisions_walker_nav_menu_edit.php';
+				require_once(
+					TN_DIVISIONS_INCLUDE_DIR
+					. 'divisions_walker_nav_menu_edit.php');
 				$walker = 'Divisions_Walker_Nav_Menu_Edit';
 			}
 			return $walker;
@@ -477,7 +498,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 		function wp_update_nav_menu_item_hook($menu_id, $menu_item_id, $args) {
 
 			$division_enabled = isset(
-				$_POST[dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION ][$menu_item_id]);
+				$_POST
+					[dvs_Constants::NAV_MENU_DIVISION_CHECKBOX_NAME]
+					[$menu_item_id]);
 			update_post_meta(
 				$menu_item_id,
 				dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION,

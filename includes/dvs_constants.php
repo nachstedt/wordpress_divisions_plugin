@@ -5,7 +5,7 @@ if ( !class_exists( "dvs_Constants" ) )
 
 	class dvs_Constants {
 
-		const VERSION = '0.1.0';
+		const VERSION = '0.1.1';
 		const DATABASE_VERSION_OPTION = "divisions_plugion_version";
 
 		const DIVISION_REPLACED_NAV_MENUS_OPTION = 'replaced_nav_menus';
@@ -17,7 +17,7 @@ if ( !class_exists( "dvs_Constants" ) )
 		const NAV_MENU_DIVSION_ENABLED_OPTION = 'dvs_division_enabled';
 		const NAV_MENU_DIVISION_OPTION = 'dvs_division';
 		const NAV_MENU_DIVISION_EDIT_NAME = 'edit-menu-item-division';
-
+		const NAV_MENU_DIVISION_CHECKBOX_NAME = 'menu-item-division-enabled';
 
 		const HEADER_IMAGE_MODE_OPTION = 'dvs_header_image_option';
 		const HEADER_IMAGE_MODE_USE_DEFAULT = 'use_default';
@@ -39,4 +39,3 @@ if ( !class_exists( "dvs_Constants" ) )
 
 	};
 }
-?>

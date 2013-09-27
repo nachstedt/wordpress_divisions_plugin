@@ -5,7 +5,7 @@
 if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" )
 		&& class_exists( 'Walker_Nav_Menu_Edit' ) )
 {
-	require_once(sprintf("%s/dvs_constants.php", dirname(__FILE__)));
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_constants.php');
 
 	class Divisions_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 
@@ -21,7 +21,7 @@ if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" )
 
 			if ( ! class_exists( 'phpQuery') ) {
 				// load phpQuery at the last moment, to minimise chance of conflicts (ok, it's probably a bit too defensive)
-				require_once 'phpQuery-onefile.php';
+				require_once(TN_DIVISIONS_INCLUDE_DIR . 'phpQuery-onefile.php');
 			}
 
 			$_doc = phpQuery::newDocumentHTML( $output );
@@ -60,7 +60,9 @@ if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" )
 						."<label for='edit-menu-item-division-enabled-$menu_item_id'>"
 							."<input type='checkbox' "
 									."id='edit-menu-item-division-enabled-$menu_item_id' "
-									."name='menu-item-division-enabled[$menu_item_id]' "
+									."name='"
+									. dvs_Constants::NAV_MENU_DIVISION_CHECKBOX_NAME
+									."[$menu_item_id]' "
 									. ($division_enabled ? "checked" : "")
 									.">"
 								." Attach fixed division to this link: "
