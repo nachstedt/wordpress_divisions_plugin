@@ -9,6 +9,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Create multiple divisions in your site with individual menus, sidebars and header.
+
 == Description ==
 
 The Divisions Plugin enables you to create parts, called divisions, of your
@@ -44,10 +45,20 @@ as normal locations.
 
 == Changelog ==
 
+= 0.1.1 =
+* fixing paths issues of php and script files
+* fixing bug that prevent division option for navigation menu entries
+* removed dead settings link on plugin page
+* fixed typos in format mistakes of readme.txt
+* removed screenshots from the plugin folder
+
 = 0.1.0 =
 * First published version
 
 == Upgrade Notice ==
+
+= 0.1.1 =
+This version fixes several critical bugs.
 
 = 0.1.0 =
 This is the first published version.
