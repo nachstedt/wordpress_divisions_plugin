@@ -17,7 +17,7 @@ if ( !class_exists( "dvs_Constants" ) )
 		const NAV_MENU_DIVSION_ENABLED_OPTION = 'dvs_division_enabled';
 		const NAV_MENU_DIVISION_OPTION = 'dvs_division';
 		const NAV_MENU_DIVISION_EDIT_NAME = 'edit-menu-item-division';
-
+		const NAV_MENU_DIVISION_CHECKBOX_NAME = 'menu-item-division-enabled';
 
 		const HEADER_IMAGE_MODE_OPTION = 'dvs_header_image_option';
 		const HEADER_IMAGE_MODE_USE_DEFAULT = 'use_default';

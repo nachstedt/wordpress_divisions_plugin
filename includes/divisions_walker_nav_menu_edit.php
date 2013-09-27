@@ -60,7 +60,9 @@ if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" )
 						."<label for='edit-menu-item-division-enabled-$menu_item_id'>"
 							."<input type='checkbox' "
 									."id='edit-menu-item-division-enabled-$menu_item_id' "
-									."name='menu-item-division-enabled[$menu_item_id]' "
+									."name='"
+									. dvs_Constants::NAV_MENU_DIVISION_CHECKBOX_NAME
+									."[$menu_item_id]' "
 									. ($division_enabled ? "checked" : "")
 									.">"
 								." Attach fixed division to this link: "

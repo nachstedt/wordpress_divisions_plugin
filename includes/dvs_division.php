@@ -53,9 +53,12 @@ if(!class_exists('dvs_Division'))
 
 		public static function save_post($post_id)
 		{
-			if(!get_post_type($post_id) == dvs_Constants::DIVISION_POST_TYPE) return;
-			if(!current_user_can('edit_post', $post_id)) return;
-			if (empty($_POST)) return;
+			if ((get_post_type($post_id) != dvs_Constants::DIVISION_POST_TYPE)
+					or (!current_user_can('edit_post', $post_id))
+					or (empty($_POST)))
+			{
+				return;
+			}
 
 			update_post_meta(
 				$post_id,

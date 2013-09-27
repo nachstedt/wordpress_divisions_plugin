@@ -498,7 +498,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 		function wp_update_nav_menu_item_hook($menu_id, $menu_item_id, $args) {
 
 			$division_enabled = isset(
-				$_POST[dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION ][$menu_item_id]);
+				$_POST
+					[dvs_Constants::NAV_MENU_DIVISION_CHECKBOX_NAME]
+					[$menu_item_id]);
 			update_post_meta(
 				$menu_item_id,
 				dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION,
