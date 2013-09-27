@@ -39,4 +39,3 @@ if ( !class_exists( "dvs_Constants" ) )
 
 	};
 }
-?>

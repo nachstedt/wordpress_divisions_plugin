@@ -25,12 +25,32 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+if (!defined('TN_DIVISIONS_PLUGIN_DIR'))
+{
+	define('TN_DIVISIONS_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
+}
+
+if (!defined('TN_DIVISIONS_INCLUDE_DIR'))
+{
+	define('TN_DIVISIONS_INCLUDE_DIR', TN_DIVISIONS_PLUGIN_DIR . 'includes/');
+}
+
+if (!defined('TN_DIVISIONS_SCRIPT_DIR'))
+{
+	define('TN_DIVISIONS_SCRIPT_DIR', TN_DIVISIONS_PLUGIN_DIR . 'scripts/');
+}
+
+if (!defined('TN_DIVISIONS_TEMPLATE_DIR'))
+{
+	define('TN_DIVISIONS_TEMPLATE_DIR', TN_DIVISIONS_PLUGIN_DIR . 'templates/');
+}
+
 if(!class_exists('TN_Divisions_Plugin'))
 {
 
-	require_once(sprintf("%s/includes/dvs_division.php", dirname(__FILE__)));
-	#require_once(sprintf("%s/includes/dvs_settings.php", dirname(__FILE__)));
-	require_once(sprintf("%s/includes/dvs_constants.php", dirname(__FILE__)));
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_division.php');
+	#require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_settings.php');
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_constants.php');
 
 	class TN_Divisions_Plugin
 	{
@@ -454,9 +474,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// swap the menu walker class only if it's the default wp class (just in
 			// case)
 			if ( $walker === 'Walker_Nav_Menu_Edit' ) {
-				require_once
-					WP_PLUGIN_DIR
-					. '/divisions/includes/divisions_walker_nav_menu_edit.php';
+				require_once(
+					TN_DIVISIONS_INCLUDE_DIR
+					. 'divisions_walker_nav_menu_edit.php');
 				$walker = 'Divisions_Walker_Nav_Menu_Edit';
 			}
 			return $walker;

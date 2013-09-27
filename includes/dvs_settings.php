@@ -2,7 +2,7 @@
 if(!class_exists('dvs_Settings')) 
 {
 
-	require_once(sprintf("%s/dvs_division.php", dirname(__FILE__)));
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_division.php');
 
     class dvs_Settings
     {
@@ -51,7 +51,7 @@ if(!class_exists('dvs_Settings'))
 			}
 
 			// Render the settings template
-			include(sprintf("%s/../templates/settings.php", dirname(__FILE__)));
+			include(TN_DIVISIONS_TEMPLATE_DIR . 'settings.php');
 		}
 
 		/**

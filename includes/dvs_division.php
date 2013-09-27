@@ -2,7 +2,7 @@
 if(!class_exists('dvs_Division'))
 {
 
-	require_once(sprintf("%s/dvs_constants.php", dirname(__FILE__)));
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_constants.php');
 
 
 	class dvs_Division
@@ -98,7 +98,7 @@ if(!class_exists('dvs_Division'))
 				wp_enqueue_media();
 				wp_register_script(
 					'custom_header_image_upload.js',
-					WP_PLUGIN_URL.'/divisions/scripts/custom_header_image_upload.js',
+					TN_DIVISIONS_SCRIPT_DIR . 'custom_header_image_upload.js',
 					array('jquery'));
 				wp_enqueue_script('custom_header_image_upload.js');
 			}
@@ -136,7 +136,7 @@ if(!class_exists('dvs_Division'))
 				dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION,
 				true);
 			if ($replaced_nav_menus=='') $replaced_nav_menus=array();
-			include(dirname(__FILE__) . "/../templates/nav_menus_metabox.php");
+			include(TN_DIVISIONS_TEMPLATE_DIR . 'nav_menus_metabox.php');
 		}
 
 		public static function render_sidebars_metabox($post)
@@ -148,7 +148,7 @@ if(!class_exists('dvs_Division'))
 				dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION,
 				true);
 			if ($replaced_sidebars=='') $replaced_sidebars=array();
-			include(dirname(__FILE__) . "/../templates/sidebars_metabox.php");
+			include(TN_DIVISIONS_TEMPLATE_DIR . 'sidebars_metabox.php');
 		}
 
 		public static function render_header_image_metabox($post)
@@ -163,7 +163,7 @@ if(!class_exists('dvs_Division'))
 				true);
 			if (empty($header_image_option)) 
 				$header_image_option = dvs_Constants::HEADER_IMAGE_MODE_USE_DEFAULT;
-			include(dirname(__FILE__) . "/../templates/header_image_metabox.php");
+			include(TN_DIVISIONS_TEMPLATE_DIR . 'header_image_metabox.php');
 		}
 
 		public static function meta_box_callback()
