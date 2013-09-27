@@ -83,9 +83,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'post_link',
 				array(&$this, 'post_link_filter'), 1, 2);
-			add_filter(
-				'plugin_action_links_' . plugin_basename(__FILE__),
-				array(&$this, 'plugin_action_links_filter'));
+//			add_filter(
+//				'plugin_action_links_' . plugin_basename(__FILE__),
+//				array(&$this, 'plugin_action_links_filter'));
 			add_filter(
 					'wp_edit_nav_menu_walker',
 					array( &$this, 'wp_edit_nav_menu_walker_filter' ) );
@@ -429,20 +429,20 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 		}
 
-		/**
-		 * Adds settings link to the plugin information shown on the plugin site
-		 *
-		 * @param array $links Original list of links to display
-		 * @return array Extended list of links to display
-		 */
-		public function plugin_action_links_filter($links) {
-			$settings_link =
-				'<a href="'
-				. get_bloginfo('wpurl')
-				. '/wp-admin/admin.php?page=tn_divisions_plugin">Settings</a>';
-			array_unshift($links, $settings_link);
-			return $links;
-		}
+//		/**
+//		 * Adds settings link to the plugin information shown on the plugin site
+//		 *
+//		 * @param array $links Original list of links to display
+//		 * @return array Extended list of links to display
+//		 */
+//		public function plugin_action_links_filter($links) {
+//			$settings_link =
+//				'<a href="'
+//				. get_bloginfo('wpurl')
+//				. '/wp-admin/admin.php?page=tn_divisions_plugin">Settings</a>';
+//			array_unshift($links, $settings_link);
+//			return $links;
+//		}
 
 		/**
 		 * Return the id of the currently active division
