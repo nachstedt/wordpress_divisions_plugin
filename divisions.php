@@ -154,7 +154,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function setup_nav_menu_item_filter($menu_item)
 		{
-			if (is_admin()) return $menu_item;
+			if (is_admin()) {return $menu_item;}
 			$division_enabled = esc_attr( get_post_meta(
 				$menu_item->ID,
 				dvs_Constants::NAV_MENU_DIVSION_ENABLED_OPTION,
@@ -165,21 +165,25 @@ if(!class_exists('TN_Divisions_Plugin'))
 				TRUE ) );
 			if ($division_enabled)
 			{
-				// chosen_division <0 means "no division"
-				if ($chosen_division <0 ) return $menu_item;
 				$division = $chosen_division;
 			}
 			else
 			{
 				$division = $this->get_current_division();
 			}
-			$menu_item->url = add_query_arg(
-				dvs_Constants::QUERY_ARG_NAME_DIVISION,
-				$division,
-				$menu_item->url);
+			// chosen_division <0 means "no division"
+			if ($division >= 0)
+			{
+				$menu_item->url = add_query_arg(
+					dvs_Constants::QUERY_ARG_NAME_DIVISION,
+					$division,
+					$menu_item->url);
+			}
 			if ($division_enabled && $division==$this->get_current_division())
+			{
 				$menu_item->classes[] =
 					dvs_Constants::CSS_CLASS_MENU_ITEM_CURRENT_DIVISION;
+			}
 			return $menu_item;
 		}
 
