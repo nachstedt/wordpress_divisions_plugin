@@ -42,6 +42,7 @@ if(!class_exists('dvs_Division'))
 					'show_ui'              => true,
 					'show_in_nav_menus'    => false,
 					'show_in_menu'         => true,
+					'menu_position'        => 100,
 					'has_archive'          => false,
 					'supports'             => array(
 						'title',),
