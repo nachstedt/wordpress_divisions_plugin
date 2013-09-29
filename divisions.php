@@ -3,7 +3,7 @@
 Plugin Name: Divisions
 Plugin URI: http://www.nachstedt.com/en/divisions-wordpress-plugin-en
 Description: Create multiple divisions in your site with individual menus, sidebars and header images. Divisions may easily change share content of all types while maintaining a consistent look.
-Version: 0.1.1
+Version: 0.1.2
 Author: Timo Nachstedt
 Author URI: http://www.nachstedt.com
 License: GPL2
