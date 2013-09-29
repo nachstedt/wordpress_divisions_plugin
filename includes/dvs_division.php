@@ -42,6 +42,16 @@ if(!class_exists('dvs_Division'))
 					'show_ui'              => true,
 					'show_in_nav_menus'    => false,
 					'show_in_menu'         => true,
+					'menu_position'        => 100,
+					'capabilities'         => array(
+						'edit_post'          => 'manage_options',
+						'read_post'          => 'manage_options',
+						'delete_post'        => 'manage_options',
+						'edit_posts'         => 'manage_options',
+						'edit_others_posts'  => 'manage_options',
+						'publish_posts'      => 'manage_options',
+						'read_private_posts' => 'manage_options'
+					),
 					'has_archive'          => false,
 					'supports'             => array(
 						'title',),
