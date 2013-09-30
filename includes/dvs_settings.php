@@ -1,19 +1,27 @@
 <?php
-if(!class_exists('dvs_Settings')) 
+if(!class_exists('dvs_Settings'))
 {
 
 	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_division.php');
 
     class dvs_Settings
     {
-        
+		const OPTION_GROUP = 'tn_divisions_plugin-settings';
+		const USE_PERMALINKS_OPTION = 'use_permalinks';
+		const SECTION_GENERAL_SLUG = "section_general";
+		const MENU_SLUG = "tn_division_plugin_settings";
+
         public static function register_hooks()
         {
             # register actions
 			add_action('admin_init', array(__CLASS__, 'admin_init'));
 			add_action('admin_menu', array(__CLASS__, 'admin_menu'));
+
+			add_filter(
+				'plugin_action_links_' . TN_DIVISIONS_PLUGIN_BASENAME,
+				array(__CLASS__, 'plugin_action_links_filter'));
         }
-        
+
 		/**
 		 * hook into WP's admin_init action hook
 		 */
@@ -29,15 +37,15 @@ if(!class_exists('dvs_Settings'))
 		{
 			add_submenu_page(
 				'edit.php?post_type='.dvs_Constants::DIVISION_POST_TYPE,
-				'Divisions Plugin Settings',             # title in browser bar
-				'Settings',                              # menu title
-				'manage_options',                        # required capability
-				'tn_division_plugin_settings',           # menu slug
+				'Divisions Plugin Settings',                # title in browser bar
+				'Settings',                                 # menu title
+				'manage_options',                           # required capability
+				self::MENU_SLUG,                   # menu slug
 				array(__CLASS__, 'settings_menu_callback')  # callback
 			);
 		}
-        
-        
+
+
         /**
 		 * Menu Callback
 		 */
@@ -60,42 +68,51 @@ if(!class_exists('dvs_Settings'))
 		private static function init_settings()
 		{
 			// register the settings for this plugin
-			register_setting('tn_divisions_plugin-settings', 'setting_a');
-			register_setting('tn_divisions_plugin-settings', 'setting_b');
+			register_setting(self::OPTION_GROUP, self::USE_PERMALINKS_OPTION);
 			add_settings_section(
-				'section-one',                         # id
-				'Section One',                         # title
-				array(__CLASS__, 'section_one_callback'), # callback
-				'tn_divisions_plugin'                  # menu slug
+				self::SECTION_GENERAL_SLUG,                   # id
+				_("General Settings"),                        # title
+				array(__CLASS__, 'section_general_callback'), # callback
+				self::MENU_SLUG                               # menu slug
 			);
 			add_settings_field(
-				'setting_a',                         # field id
-				'Setting A',                         # display title
-				array(__CLASS__, 'setting_callback'), # callback
-				'tn_divisions_plugin',               # menu slug
-				'section-one',                       # section id
-				array('name' => 'setting_a')        # callback args
-			);
-			add_settings_field(
-				'setting_b',                         # field id
-				'Setting B',                         # display title
-				array(__CLASS__, 'setting_callback'), # callback
-				'tn_divisions_plugin',               # menu slug
-				'section-one',                       # section id
-				array('name' => 'setting_b')         # callback args
+				self::USE_PERMALINKS_OPTION,                   # field id
+				'Setting A',                                   # display title
+				array(__CLASS__, 'permalink_option_callback'), # callback
+				self::MENU_SLUG,                               # menu slug
+				self::SECTION_GENERAL_SLUG                     # section id
 			);
 		}
-        
-        public static function section_one_callback()
+
+		public static function section_general_callback()
 		{
 			echo 'Some help text goes here.';
 		}
 
-		public function setting_callback( $args ) {
-			$name = esc_attr( $args['name'] );
-			$value = esc_attr( get_option( $name ) );
-			echo "<input type='text' name=$name value='$value' />";
+        public static function permalink_option_callback()
+		{
+			echo "<input type='text' name='timo' value='nachstedt' />";
 		}
+
+		/**
+		 * Adds settings link to the plugin information shown on the plugin site
+		 *
+		 * @param array $links Original list of links to display
+		 * @return array Extended list of links to display
+		 */
+		public static function plugin_action_links_filter($links) {
+			$settings_link =
+				'<a href="'
+				. get_bloginfo('wpurl')
+				. '/wp-admin/edit.php?post_type='
+				. dvs_Constants::DIVISION_POST_TYPE
+				. '&page='
+				. self::MENU_SLUG
+				. '">Settings</a>';
+			array_unshift($links, $settings_link);
+			return $links;
+		}
+
 
     }
 }

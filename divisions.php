@@ -25,6 +25,11 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+if (!defined('TN_DIVISIONS_PLUGIN_FILE'))
+{
+	define('TN_DIVISIONS_PLUGIN_BASENAME', plugin_basename(__FILE__));
+}
+
 if (!defined('TN_DIVISIONS_PLUGIN_DIR'))
 {
 	define('TN_DIVISIONS_PLUGIN_DIR', plugin_dir_path( __FILE__ ));
@@ -50,7 +55,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 {
 
 	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_division.php');
-	#require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_settings.php');
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_settings.php');
 	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_constants.php');
 
 	class TN_Divisions_Plugin
@@ -69,7 +74,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 			// register hooks for plugin classes
 			dvs_Division::register_hooks();
-			#dvs_Settings::register_hooks();
+			dvs_Settings::register_hooks();
 
 			// register actions
 			add_action(
@@ -83,9 +88,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'post_link',
 				array(&$this, 'post_link_filter'), 1, 2);
-//			add_filter(
-//				'plugin_action_links_' . plugin_basename(__FILE__),
-//				array(&$this, 'plugin_action_links_filter'));
 			add_filter(
 					'wp_edit_nav_menu_walker',
 					array( &$this, 'wp_edit_nav_menu_walker_filter' ) );
@@ -419,21 +421,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 				}
 			}
 		}
-
-//		/**
-//		 * Adds settings link to the plugin information shown on the plugin site
-//		 *
-//		 * @param array $links Original list of links to display
-//		 * @return array Extended list of links to display
-//		 */
-//		public function plugin_action_links_filter($links) {
-//			$settings_link =
-//				'<a href="'
-//				. get_bloginfo('wpurl')
-//				. '/wp-admin/admin.php?page=tn_divisions_plugin">Settings</a>';
-//			array_unshift($links, $settings_link);
-//			return $links;
-//		}
 
 		/**
 		 * Filter the used navigation menu walker
