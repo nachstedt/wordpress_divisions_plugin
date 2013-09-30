@@ -7,10 +7,20 @@ if(!class_exists('dvs_Settings'))
 	class dvs_Settings
 	{
 		const OPTION_GROUP = 'tn_divisions_plugin-settings';
-		const USE_PERMALINKS_OPTION = 'use_permalinks';
-		const SECTION_GENERAL_SLUG = "section_general";
 		const MENU_SLUG = "tn_division_plugin_settings";
-
+		const SECTION_LINKS_SLUG = "section_links";
+		const SECTION_LINKS_TITLE = "General Settings";
+		const SECTION_LINKS_DESCRIPTION = "Define how the Divisions Plugin 
+			manipulates page links to determine which division to load when
+			clicking on a link";
+		const SETTING_LINK_MODIFICATION_TITLE = 'Link Modification';
+		const SETTING_LINK_MODIFICATION_SLUG = 'dvs_link_modification';
+		const OPTION_QUERY_ARG_VALUE = 'query_arg';
+		const OPTION_QUERY_ARG_LABEL = 'Add query argument';
+		const OPTION_PERMALINK_VALUE = 'permalink';
+		const OPTION_PERMALINK_LABEL = 'Modify permalink (must be activated)';
+		const SETTING_LINK_MODIFICATION_OPTION_PERMALINK = 'permalinks';
+		
 		public static function register_hooks()
 		{
 			# register actions
@@ -68,30 +78,53 @@ if(!class_exists('dvs_Settings'))
 		private static function init_settings()
 		{
 			// register the settings for this plugin
-			register_setting(self::OPTION_GROUP, self::USE_PERMALINKS_OPTION);
+			register_setting(
+				self::OPTION_GROUP, 
+				self::SETTING_LINK_MODIFICATION_SLUG
+			);
 			add_settings_section(
-				self::SECTION_GENERAL_SLUG,                   # id
-				_("General Settings"),                        # title
-				array(__CLASS__, 'section_general_callback'), # callback
+				self::SECTION_LINKS_SLUG,                     # id
+				_(self::SECTION_LINKS_TITLE),                 # title
+				array(__CLASS__, 'section_links_callback'),   # callback
 				self::MENU_SLUG                               # menu slug
 			);
 			add_settings_field(
-				self::USE_PERMALINKS_OPTION,                   # field id
-				'Setting A',                                   # display title
+				self::SETTING_LINK_MODIFICATION_SLUG,          # field id
+				self::SETTING_LINK_MODIFICATION_TITLE,         # display title
 				array(__CLASS__, 'permalink_option_callback'), # callback
 				self::MENU_SLUG,                               # menu slug
-				self::SECTION_GENERAL_SLUG                     # section id
+				self::SECTION_LINKS_SLUG                       # section id
 			);
 		}
 
-		public static function section_general_callback()
+		public static function section_links_callback()
 		{
-			echo 'Some help text goes here.';
+			echo _(self::SECTION_LINKS_DESCRIPTION);
 		}
 
 		public static function permalink_option_callback()
 		{
-			echo "<input type='text' name='timo' value='nachstedt' />";
+			$value = get_option(self::SETTING_LINK_MODIFICATION_SLUG);
+			$checked_permalink = ($value==self::OPTION_PERMALINK_VALUE);
+			$checked_query_arg = !$checked_permalink;
+			echo 
+				"<label>"
+					. "<input type='radio' "
+						. "name='" . self::SETTING_LINK_MODIFICATION_SLUG . "' "
+						. "value='". self::OPTION_QUERY_ARG_VALUE . "' " 
+						. ($checked_query_arg ? "checked" : "")
+						. " /> "
+					. "<span>". self::OPTION_QUERY_ARG_LABEL . "</span>"
+				. "</label>"
+				. "<br>"
+				."<label>"
+					. "<input type='radio' "
+						. "name='" . self::SETTING_LINK_MODIFICATION_SLUG . "' "
+						. "value='" . self::OPTION_PERMALINK_VALUE . "' "
+						. ($checked_permalink ? "checked" : "")
+						." /> "
+					. "<span>" . self::OPTION_PERMALINK_LABEL . "</span>"
+				. "</label>";
 		}
 
 		/**
