@@ -109,6 +109,27 @@ if(!class_exists('TN_Divisions_Plugin'))
 				array($this, 'sidebars_widgets_filter'));
 		}
 
+		public function add_division_to_url($url, $division_id)
+		{
+			if (false)
+			{
+				$site_url = get_site_url();
+				$post_data = get_post($division_id, ARRAY_A);
+				$slug = $post_data['post_name'];
+				return $site_url
+					. '/' . $slug
+					. substr($url, strlen($site_url));
+			}
+			else
+			{
+				return add_query_arg(
+					dvs_Constants::QUERY_ARG_NAME_DIVISION,
+					$division_id,
+					$url);
+			}
+
+		}
+
 		/**
 		 * hook into WP's init hook
 		 */
@@ -174,10 +195,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// chosen_division <0 means "no division"
 			if ($division >= 0)
 			{
-				$menu_item->url = add_query_arg(
-					dvs_Constants::QUERY_ARG_NAME_DIVISION,
-					$division,
-					$menu_item->url);
+				$menu_item->url = $this->add_division_to_url(
+					$menu_item->url,
+					$division);
 			}
 			if ($division_enabled && $division==$this->get_current_division())
 			{
@@ -238,7 +258,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		/**
 		 * Filter permalinks for taxonomy archives
 		 *
-		 * This filter adds a querz arg to the generated link to maintain the
+		 * This filter adds a query arg to the generated link to maintain the
 		 * current division.
 		 *
 		 * @param string $url original link url
@@ -246,10 +266,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function term_link_filter($url)
 		{
-			return add_query_arg(
-				dvs_Constants::QUERY_ARG_NAME_DIVISION,
-				$this->get_current_division(),
-				$url);
+			return $this->add_division_to_url(
+				$url,
+				$this->get_current_division());
 		}
 
 		/**
@@ -313,10 +332,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 * @return string modified link url
 		 */
 		public function post_link_filter($permalink_url, $post_data)  {
-			return add_query_arg(
-				dvs_Constants::QUERY_ARG_NAME_DIVISION,
-				$this->get_current_division(),
-				$permalink_url);
+			return $this->add_division_to_url(
+				$permalink_url,
+				$this->get_current_division());
 		}
 
 		/**

@@ -55,7 +55,7 @@ if(!class_exists('dvs_Division'))
 					'has_archive'          => false,
 					'supports'             => array(
 						'title',),
-					'rewrite'              => false,
+					'rewrite'              => true,
 					'register_meta_box_cb' => array(__CLASS__, 'meta_box_callback')
 				)
 			);
@@ -184,7 +184,7 @@ if(!class_exists('dvs_Division'))
 		{
 			#echo '<style>#edit-slug-box{display:none;}</style>';
 			#remove_meta_box('submitdiv', self::POST_TYPE, 'side');
-			remove_meta_box('slugdiv', dvs_Constants::DIVISION_POST_TYPE, 'normal');
+			#remove_meta_box('slugdiv', dvs_Constants::DIVISION_POST_TYPE, 'normal');
 		}
 	};
 }
