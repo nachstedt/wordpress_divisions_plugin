@@ -8,6 +8,115 @@ if(!class_exists('dvs_Division'))
 	class dvs_Division
 	{
 
+		private $id = NULL;
+		private $header_image_mode = NULL;
+		private $header_image_url = NULL;
+		private $replaced_nav_menus = NULL;
+		private $replaced_sidebars = NULL;
+		private $title = NULL;
+
+		private static $all_divisions = NULL;
+
+		public function __construct($id) {
+			$this->id = $id;
+		}
+
+		public function get_id()
+		{
+			return $this->id;
+		}
+
+		public function get_header_image_mode()
+		{
+			if ($this->header_image_mode == NULL)
+			{
+				$this->header_image_mode = get_post_meta(
+					$this->id,
+					dvs_Constants::HEADER_IMAGE_MODE_OPTION,
+					TRUE);
+				if (empty($this->header_image_mode))
+				{
+					$this->header_image_mode =
+						dvs_Constants::HEADER_IMAGE_MODE_USE_DEFAULT;
+				}
+			}
+			return $this->header_image_mode;
+		}
+
+		public function get_header_image_url()
+		{
+			if ($this->header_image_url ==  NULL)
+			{
+				$this->header_image_url = get_post_meta(
+					$this->id,
+					dvs_Constants::HEADER_IMAGE_URL_OPTION,
+					TRUE);
+			}
+			return $this->header_image_url;
+		}
+
+		public function get_replaced_nav_menus()
+		{
+			if ($this->replaced_nav_menus == NULL)
+			{
+				$this->replaced_nav_menus = get_post_meta(
+					$this->id,
+					dvs_Constants::DIVISION_REPLACED_NAV_MENUS_OPTION,
+					TRUE);
+				if ($this->replaced_nav_menus =="")
+				{
+					$this->replaced_nav_menus=array();
+				}
+			}
+			return $this->replaced_nav_menus;
+		}
+
+		public function get_replaced_sidebars()
+		{
+			if ($this->replaced_sidebars == NULL)
+			{
+				$this->replaced_sidebars = get_post_meta(
+					$this->id,
+					dvs_Constants::DIVISION_REPLACED_SIDEBARS_OPTION,
+					True);
+				if ($this->replaced_sidebars=="") {
+					$this->replaced_sidebars = array();
+				}
+			}
+			return $this->replaced_sidebars;
+		}
+
+		public function get_title()
+		{
+			if ($this->title == NULL)
+			{
+				$this->title = get_the_title($this->id);
+			}
+			return $this->title;
+		}
+
+
+		public static function get_all()
+		{
+			if (self::$all_divisions == NULL)
+			{
+				$posts = get_posts(array(
+					'post_type'      => dvs_Constants::DIVISION_POST_TYPE,
+					'post_status'    => 'publish',
+					'orderby'        => 'post_title',
+					'order'          => 'ASC',
+				));
+				self::$all_divisions = array();
+				foreach ($posts as $post)
+				{
+					$division = new dvs_Division($post->ID);
+					$division->title = $post->post_title;
+					self::$all_divisions[] = $division;
+				}
+			}
+			return self::$all_divisions;
+		}
+
 		public static function register_hooks()
 		{
 			add_action(
