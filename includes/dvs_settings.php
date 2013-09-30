@@ -4,23 +4,23 @@ if(!class_exists('dvs_Settings'))
 
 	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_division.php');
 
-    class dvs_Settings
-    {
+	class dvs_Settings
+	{
 		const OPTION_GROUP = 'tn_divisions_plugin-settings';
 		const USE_PERMALINKS_OPTION = 'use_permalinks';
 		const SECTION_GENERAL_SLUG = "section_general";
 		const MENU_SLUG = "tn_division_plugin_settings";
 
-        public static function register_hooks()
-        {
-            # register actions
+		public static function register_hooks()
+		{
+			# register actions
 			add_action('admin_init', array(__CLASS__, 'admin_init'));
 			add_action('admin_menu', array(__CLASS__, 'admin_menu'));
 
 			add_filter(
 				'plugin_action_links_' . TN_DIVISIONS_PLUGIN_BASENAME,
 				array(__CLASS__, 'plugin_action_links_filter'));
-        }
+		}
 
 		/**
 		 * hook into WP's admin_init action hook
@@ -46,7 +46,7 @@ if(!class_exists('dvs_Settings'))
 		}
 
 
-        /**
+		/**
 		 * Menu Callback
 		 */
 		public static function settings_menu_callback()
@@ -89,7 +89,7 @@ if(!class_exists('dvs_Settings'))
 			echo 'Some help text goes here.';
 		}
 
-        public static function permalink_option_callback()
+		public static function permalink_option_callback()
 		{
 			echo "<input type='text' name='timo' value='nachstedt' />";
 		}
@@ -114,6 +114,6 @@ if(!class_exists('dvs_Settings'))
 		}
 
 
-    }
+	}
 }
 ?>
