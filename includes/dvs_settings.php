@@ -10,15 +10,16 @@ if(!class_exists('dvs_Settings'))
 		const MENU_SLUG = "tn_division_plugin_settings";
 		const SECTION_LINKS_SLUG = "section_links";
 		const SECTION_LINKS_TITLE = "General Settings";
-		const SECTION_LINKS_DESCRIPTION = "Define how the Divisions Plugin
+		const SECTION_LINKS_DESCRIPTION = 'Define how the Divisions plugin
 			manipulates page links to determine which division to load when
-			clicking on a link";
+			clicking on a link';
 		const SETTING_LINK_MODIFICATION_TITLE = 'Link Modification';
 		const SETTING_LINK_MODIFICATION_SLUG = 'dvs_link_modification';
 		const OPTION_QUERY_ARG_VALUE = 'query_arg';
 		const OPTION_QUERY_ARG_LABEL = 'Add query argument';
 		const OPTION_PERMALINK_VALUE = 'permalink';
-		const OPTION_PERMALINK_LABEL = 'Modify permalink (must be activated)';
+		const OPTION_PERMALINK_LABEL = 'Modify permalink (Global permalinks
+			must be activated)';
 		const SETTING_LINK_MODIFICATION_OPTION_PERMALINK = 'permalinks';
 
 		public static function register_hooks()
@@ -86,7 +87,8 @@ if(!class_exists('dvs_Settings'))
 			// register the settings for this plugin
 			register_setting(
 				self::OPTION_GROUP,
-				self::SETTING_LINK_MODIFICATION_SLUG
+				self::SETTING_LINK_MODIFICATION_SLUG,
+				array(__CLASS__, 'setting_link_modification_sanitize')
 			);
 			add_settings_section(
 				self::SECTION_LINKS_SLUG,                     # id
@@ -106,6 +108,12 @@ if(!class_exists('dvs_Settings'))
 		public static function section_links_callback()
 		{
 			echo _(self::SECTION_LINKS_DESCRIPTION);
+		}
+
+		public static function setting_link_modification_sanitize($input)
+		{
+			dvs_LinkModification::schedule_rewrite_rules_flush();
+			return $input;
 		}
 
 		public static function permalink_option_callback()

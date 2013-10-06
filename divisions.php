@@ -54,9 +54,10 @@ if (!defined('TN_DIVISIONS_SCRIPT_DIR_URL'))
 if(!class_exists('TN_Divisions_Plugin'))
 {
 
-	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_division.php');
-	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_settings.php');
 	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_constants.php');
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_division.php');
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_link_modification.php');
+	require_once(TN_DIVISIONS_INCLUDE_DIR . 'dvs_settings.php');
 
 	class TN_Divisions_Plugin
 	{
@@ -74,6 +75,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 			// register hooks for plugin classes
 			dvs_Division::register_hooks();
+			dvs_LinkModification::register_hooks();
 			dvs_Settings::register_hooks();
 
 			// register actions
@@ -118,28 +120,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'query_vars',
 				array($this, 'query_vars_filter'));
-		}
-
-		public function add_division_to_url($url, $division_id)
-		{
-			if (dvs_Settings::get_use_permalinks()
-				&& get_option('permalink_structure'))
-			{
-				$site_url = get_site_url();
-				$post_data = get_post($division_id, ARRAY_A);
-				$slug = $post_data['post_name'];
-				return $site_url
-					. '/' . $slug
-					. substr($url, strlen($site_url));
-			}
-			else
-			{
-				return add_query_arg(
-					dvs_Constants::QUERY_ARG_NAME_DIVISION,
-					$division_id,
-					$url);
-			}
-
 		}
 
 		/**
@@ -205,7 +185,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 			// chosen_division <0 means "no division"
 			if ($division >= 0)
 			{
-				$menu_item->url = $this->add_division_to_url(
+				$menu_item->url = dvs_LinkModification::add_division_to_url(
 					$menu_item->url,
 					$division);
 			}
@@ -272,7 +252,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		public function term_link_filter($url)
 		{
 			if ($this->current_division==NULL) {return $url;}
-			return $this->add_division_to_url(
+			return dvs_LinkModification::add_division_to_url(
 				$url,
 				$this->current_division->get_id());
 		}
@@ -303,7 +283,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function post_link_filter($permalink_url, $post_data)  {
 			if ($this->current_division==NULL) {return $permalink_url;}
-			return $this->add_division_to_url(
+			return dvs_LinkModification::add_division_to_url(
 				$permalink_url,
 				$this->current_division->get_id());
 		}
