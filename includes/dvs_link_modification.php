@@ -17,18 +17,21 @@ class dvs_LinkModification {
 
 	public static function register_hooks()
 	{
-		# register actions
-		add_action('admin_init', array(__CLASS__, 'admin_init_hook'));
-		add_action('wp_trash_post', array(__CLASS__, 'wp_trash_post_hook'));
-		add_action('wp_untrash_post', array(__CLASS__, 'wp_untrash_post_hook'));
+		if (is_admin())
+		{
+			# register actions
+			add_action('admin_init', array(__CLASS__, 'admin_init_hook'));
+			add_action('wp_trash_post', array(__CLASS__, 'wp_trash_post_hook'));
+			add_action('wp_untrash_post', array(__CLASS__, 'wp_untrash_post_hook'));
 
-		add_filter(
-			'rewrite_rules_array',
-			array(__CLASS__, 'rewrite_rules_array_filter'));
-		add_filter(
-			'wp_insert_post_data',
-			array(__CLASS__, 'wp_insert_post_data_filter'),
-			'99', 2);
+			add_filter(
+				'rewrite_rules_array',
+				array(__CLASS__, 'rewrite_rules_array_filter'));
+			add_filter(
+				'wp_insert_post_data',
+				array(__CLASS__, 'wp_insert_post_data_filter'),
+				'99', 2);
+		}
 	}
 
 	/**
