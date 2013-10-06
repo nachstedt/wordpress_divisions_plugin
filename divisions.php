@@ -115,9 +115,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 				'sidebars_widgets',
 				array($this, 'sidebars_widgets_filter'));
 			add_filter(
-				'rewrite_rules_array',
-				array($this, 'rewrite_rules_array_filter'));
-			add_filter(
 				'query_vars',
 				array($this, 'query_vars_filter'));
 		}
@@ -482,26 +479,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 				}
 			}
 			return $sidebar_widgets;
-		}
-
-		public function rewrite_rules_array_filter($rules)
-		{
-			if (!dvs_Settings::get_use_permalinks()) {return $rules;}
-
-			$newrules = array();
-			$divisions = dvs_Division::get_all();
-
-			foreach($rules as $key => $rule)
-			{
-				foreach($divisions as $division)
-				{
-					$url = $division->get_permalink_slug() . '/' . $key;
-					$rewrite = $rule . '&division=' . $division->get_id();
-					$newrules[$url] = $rewrite;
-				}
-			}
-
-			return $newrules + $rules;
 		}
 
 		public function query_vars_filter($vars)

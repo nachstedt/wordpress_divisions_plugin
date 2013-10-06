@@ -23,6 +23,9 @@ class dvs_LinkModification {
 		add_action('wp_untrash_post', array(__CLASS__, 'wp_untrash_post_hook'));
 
 		add_filter(
+			'rewrite_rules_array',
+			array(__CLASS__, 'rewrite_rules_array_filter'));
+		add_filter(
 			'wp_insert_post_data',
 			array(__CLASS__, 'wp_insert_post_data_filter'),
 			'99', 2);
@@ -58,6 +61,26 @@ class dvs_LinkModification {
 				$division_id,
 				$url);
 		}
+	}
+
+	public static function rewrite_rules_array_filter($rules)
+	{
+		if (!dvs_Settings::get_use_permalinks()) {return $rules;}
+
+		$newrules = array();
+		$divisions = dvs_Division::get_all();
+
+		foreach($rules as $key => $rule)
+		{
+			foreach($divisions as $division)
+			{
+				$url = $division->get_permalink_slug() . '/' . $key;
+				$rewrite = $rule . '&division=' . $division->get_id();
+				$newrules[$url] = $rewrite;
+			}
+		}
+
+		return $newrules + $rules;
 	}
 
 	public static function schedule_rewrite_rules_flush()
