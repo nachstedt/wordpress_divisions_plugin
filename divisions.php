@@ -148,6 +148,19 @@ if(!class_exists('TN_Divisions_Plugin'))
 			$db_version = get_option(dvs_Constants::DATABASE_VERSION_OPTION, NULL);
 			if ($my_version==$db_version)
 				return;
+
+			if ($db_version=='0.2.0')
+			{
+				// in version 0.2.0, when using permalink divisions, there were
+				// no rewrite rules added for homepages (e.g.
+				// your.site.com/my_division), In case the user has currently
+				// enabled permalink link modifications, we need to flush
+				// rewrite rules to add the additional rules
+				if (dvs_Settings::get_use_permalinks())
+				{
+					flush_rewrite_rules();
+				}
+			}
 			update_option(dvs_Constants::DATABASE_VERSION_OPTION, $my_version);
 		}
 
