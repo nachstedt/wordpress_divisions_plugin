@@ -95,29 +95,25 @@ class dvs_LinkModification {
 
 	public static function rewrite_rules_array_filter($rules)
 	{
-		if ((!dvs_Settings::get_use_permalinks())
-			or self::$during_deactivation)
-		{
-			return $rules;
-		}
+		if (self::$during_deactivation) {return $rules;}
 
-		$newrules = array();
-		$oldrules = array();
-		$divisions = dvs_Division::get_all();
+		$filtered_rules = array();
 
+		// remove dvs_division/* rules
 		foreach($rules as $key => $rule)
 		{
-			if (strpos($key, dvs_Division::POST_TYPE)!==0) {
-				$oldrules[$key] = $rule;
-				foreach($divisions as $division)
-				{
-					$url = $division->get_permalink_slug() . '/' . $key;
-					$rewrite = $rule . '&division=' . $division->get_id();
-					$newrules[$url] = $rewrite;
-				}
+			if (strpos($key, dvs_Division::POST_TYPE)!==0)
+			{
+				$filtered_rules[$key] = $rule;
 			}
 		}
 
+		if (!dvs_Settings::get_use_permalinks()) {return $filtered_rules;}
+
+		$newrules = array();
+		$divisions = dvs_Division::get_all();
+
+		// add homepage permalinks
 		foreach  ($divisions as $division)
 		{
 			$url = $division->get_permalink_slug();
@@ -125,8 +121,18 @@ class dvs_LinkModification {
 			$newrules[$url] = $rewrite;
 		}
 
+		// add division permalinks for all existing rules
+		foreach($filtered_rules as $key => $rule)
+		{
+			foreach($divisions as $division)
+			{
+				$url = $division->get_permalink_slug() . '/' . $key;
+				$rewrite = $rule . '&division=' . $division->get_id();
+				$newrules[$url] = $rewrite;
+			}
+		}
 
-		return $newrules + $oldrules;
+		return $newrules + $filtered_rules;
 	}
 
 	public static function schedule_rewrite_rules_flush()
