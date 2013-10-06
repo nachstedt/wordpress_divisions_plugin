@@ -122,7 +122,8 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function add_division_to_url($url, $division_id)
 		{
-			if (dvs_Settings::get_use_permalinks())
+			if (dvs_Settings::get_use_permalinks()
+				&& get_option('permalink_structure'))
 			{
 				$site_url = get_site_url();
 				$post_data = get_post($division_id, ARRAY_A);
