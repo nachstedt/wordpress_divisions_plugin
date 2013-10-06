@@ -118,6 +118,14 @@ class dvs_LinkModification {
 			}
 		}
 
+		foreach  ($divisions as $division)
+		{
+			$url = $division->get_permalink_slug();
+			$rewrite = '/index.php?division=' . $division->get_id();
+			$newrules[$url] = $rewrite;
+		}
+
+
 		return $newrules + $oldrules;
 	}
 
