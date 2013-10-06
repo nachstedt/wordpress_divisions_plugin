@@ -4,7 +4,7 @@ Donate link: http://www.nachstedt.com/
 Tags: divisions, subcategories
 Requires at least: 3.6
 Tested up to: 3.6
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,10 @@ as normal locations.
 
 == Changelog ==
 
+= 0.2.1 =
+* Division permalinks for homepages work
+* dvs_division/* permalinks are always removed from list of rewrite rules
+
 = 0.2.0 =
 * Divisions can be encoded into links as first argument of the permalink structure
 
@@ -61,6 +65,9 @@ as normal locations.
 * First published version
 
 == Upgrade Notice ==
+
+= 0.2.1 =
+Fixed bugs related to new permalink option
 
 = 0.2.0 =
 Instead of attaching "?division=xx" to your URL, you may now directly alter your permalink structure!

@@ -3,7 +3,7 @@
 Plugin Name: Divisions
 Plugin URI: http://www.nachstedt.com/en/divisions-wordpress-plugin-en
 Description: Create multiple divisions in your site with individual menus, sidebars and header images. Divisions may easily change share content of all types while maintaining a consistent look.
-Version: 0.2.0
+Version: 0.2.1
 Author: Timo Nachstedt
 Author URI: http://www.nachstedt.com
 License: GPL2
@@ -148,6 +148,19 @@ if(!class_exists('TN_Divisions_Plugin'))
 			$db_version = get_option(dvs_Constants::DATABASE_VERSION_OPTION, NULL);
 			if ($my_version==$db_version)
 				return;
+
+			if ($db_version=='0.2.0')
+			{
+				// in version 0.2.0, when using permalink divisions, there were
+				// no rewrite rules added for homepages (e.g.
+				// your.site.com/my_division), In case the user has currently
+				// enabled permalink link modifications, we need to flush
+				// rewrite rules to add the additional rules
+				if (dvs_Settings::get_use_permalinks())
+				{
+					flush_rewrite_rules();
+				}
+			}
 			update_option(dvs_Constants::DATABASE_VERSION_OPTION, $my_version);
 		}
 
