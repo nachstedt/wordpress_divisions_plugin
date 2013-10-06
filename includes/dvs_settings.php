@@ -118,8 +118,7 @@ if(!class_exists('dvs_Settings'))
 
 		public static function permalink_option_callback()
 		{
-			$value = get_option(self::SETTING_LINK_MODIFICATION_SLUG);
-			$checked_permalink = ($value==self::OPTION_PERMALINK_VALUE);
+			$checked_permalink = self::get_use_permalinks();
 			$checked_query_arg = !$checked_permalink;
 			echo
 				"<label>"
