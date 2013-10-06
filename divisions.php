@@ -83,6 +83,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_action(
 					'wp_update_nav_menu_item',
 					array( &$this, 'wp_update_nav_menu_item_hook' ), 10, 3 );
+			add_action(
+					'wp',
+					array(&$this, 'wp_hook'));
 
 			// register filters
 			add_filter(
@@ -119,7 +122,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function add_division_to_url($url, $division_id)
 		{
-			if (false)
+			if (dvs_Settings::get_use_permalinks())
 			{
 				$site_url = get_site_url();
 				$post_data = get_post($division_id, ARRAY_A);
@@ -148,10 +151,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if (is_admin())
 			{
 				$this->register_nav_menu_locations();
-			}
-			else
-			{
-				$this->load_current_division();
 			}
 		}
 
@@ -286,12 +285,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 		 */
 		public function load_current_division() {
 			$division_id = get_query_var('division');
-			if (empty($division_id)) {
-				if (array_key_exists('division', $_GET))
-				{
-					$division_id = $_GET['division'];
-				}
-			}
 			if (!empty($division_id)) {
 				$this->current_division = new dvs_Division($division_id);
 			}
@@ -512,11 +505,19 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 		public function rewrite_rules_array_filter($rules)
 		{
+			if (!dvs_Settings::get_use_permalinks()) {return $rules;}
+
 			$newrules = array();
+			$divisions = dvs_Division::get_all();
 
 			foreach($rules as $key => $rule)
 			{
-				$newrules['stadt/' . $key] = $rule . '&division=12';
+				foreach($divisions as $division)
+				{
+					$url = $division->get_permalink_slug() . '/' . $key;
+					$rewrite = $rule . '&division=' . $division->get_id();
+					$newrules[$url] = $rewrite;
+				}
 			}
 
 			return $newrules + $rules;
@@ -526,6 +527,14 @@ if(!class_exists('TN_Divisions_Plugin'))
 		{
 			$vars[] = 'division';
 			return $vars;
+		}
+
+		/**
+		 * hook into the point of time when the wp object is set up
+		 */
+		public function wp_hook()
+		{
+			if (!is_admin()) {$this->load_current_division();}
 		}
 
 		/**

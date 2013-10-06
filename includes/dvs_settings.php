@@ -10,7 +10,7 @@ if(!class_exists('dvs_Settings'))
 		const MENU_SLUG = "tn_division_plugin_settings";
 		const SECTION_LINKS_SLUG = "section_links";
 		const SECTION_LINKS_TITLE = "General Settings";
-		const SECTION_LINKS_DESCRIPTION = "Define how the Divisions Plugin 
+		const SECTION_LINKS_DESCRIPTION = "Define how the Divisions Plugin
 			manipulates page links to determine which division to load when
 			clicking on a link";
 		const SETTING_LINK_MODIFICATION_TITLE = 'Link Modification';
@@ -20,7 +20,7 @@ if(!class_exists('dvs_Settings'))
 		const OPTION_PERMALINK_VALUE = 'permalink';
 		const OPTION_PERMALINK_LABEL = 'Modify permalink (must be activated)';
 		const SETTING_LINK_MODIFICATION_OPTION_PERMALINK = 'permalinks';
-		
+
 		public static function register_hooks()
 		{
 			# register actions
@@ -55,6 +55,12 @@ if(!class_exists('dvs_Settings'))
 			);
 		}
 
+		public static function get_use_permalinks()
+		{
+			return (
+				get_option(self::SETTING_LINK_MODIFICATION_SLUG)
+				== self::OPTION_PERMALINK_VALUE);
+		}
 
 		/**
 		 * Menu Callback
@@ -79,7 +85,7 @@ if(!class_exists('dvs_Settings'))
 		{
 			// register the settings for this plugin
 			register_setting(
-				self::OPTION_GROUP, 
+				self::OPTION_GROUP,
 				self::SETTING_LINK_MODIFICATION_SLUG
 			);
 			add_settings_section(
@@ -107,11 +113,11 @@ if(!class_exists('dvs_Settings'))
 			$value = get_option(self::SETTING_LINK_MODIFICATION_SLUG);
 			$checked_permalink = ($value==self::OPTION_PERMALINK_VALUE);
 			$checked_query_arg = !$checked_permalink;
-			echo 
+			echo
 				"<label>"
 					. "<input type='radio' "
 						. "name='" . self::SETTING_LINK_MODIFICATION_SLUG . "' "
-						. "value='". self::OPTION_QUERY_ARG_VALUE . "' " 
+						. "value='". self::OPTION_QUERY_ARG_VALUE . "' "
 						. ($checked_query_arg ? "checked" : "")
 						. " /> "
 					. "<span>". self::OPTION_QUERY_ARG_LABEL . "</span>"

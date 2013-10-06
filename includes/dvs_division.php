@@ -18,6 +18,7 @@ if(!class_exists('dvs_Division'))
 		private $id = NULL;
 		private $header_image_mode = NULL;
 		private $header_image_url = NULL;
+		private $permalink_slug = NULL;
 		private $replaced_nav_menus = NULL;
 		private $replaced_sidebars = NULL;
 		private $title = NULL;
@@ -62,6 +63,15 @@ if(!class_exists('dvs_Division'))
 			return $this->header_image_url;
 		}
 
+		public function get_permalink_slug()
+		{
+			if ($this->permalink_slug == NULL)
+			{
+				$this->permalink_slug = get_post($this->id)->post_name;
+			}
+			return $this->permalink_slug;
+		}
+
 		public function get_replaced_nav_menus()
 		{
 			if ($this->replaced_nav_menus == NULL)
@@ -102,7 +112,6 @@ if(!class_exists('dvs_Division'))
 			return $this->title;
 		}
 
-
 		public static function get_all()
 		{
 			if (self::$all_divisions == NULL)
@@ -118,6 +127,7 @@ if(!class_exists('dvs_Division'))
 				{
 					$division = new dvs_Division($post->ID);
 					$division->title = $post->post_title;
+					$division->permalink_slug = $post->post_name;
 					self::$all_divisions[] = $division;
 				}
 			}
