@@ -5,14 +5,8 @@ if ( !class_exists( "dvs_Constants" ) )
 
 	class dvs_Constants {
 
-		const VERSION = '0.1.2';
+		const VERSION = '0.2.0';
 		const DATABASE_VERSION_OPTION = "divisions_plugion_version";
-
-		const DIVISION_REPLACED_NAV_MENUS_OPTION = 'replaced_nav_menus';
-		const DIVISION_REPLACED_SIDEBARS_OPTION = 'replaced_sidebars';
-		const DIVISION_POST_NAME = 'Division';
-		const DIVISION_POST_NAME_PLURAL = 'Divisions';
-		const DIVISION_POST_TYPE = 'dvs_division';
 
 		const NAV_MENU_DIVSION_ENABLED_OPTION = 'dvs_division_enabled';
 		const NAV_MENU_DIVISION_OPTION = 'dvs_division';

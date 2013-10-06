@@ -39,16 +39,16 @@ if ( !class_exists( "Divisions_Walker_Nav_Menu_Edit" )
 			$chosen_division = esc_attr( get_post_meta( $menu_item_id, dvs_Constants::NAV_MENU_DIVISION_OPTION, TRUE ) );
 
 			global $tn_divisions_plugin;
-			$divisions = $tn_divisions_plugin->get_divisions();
+			$divisions = dvs_Division::get_all();
 			$options = '<option value="-1" '
 				. ($chosen_division == '-1' ? 'selected' : '') . '>'
 				.'-- No Division --</option>';
 			foreach ($divisions as $division)
 			{
-				$selected = $division->ID == $chosen_division ? " selected" : "";
+				$selected = $division->get_id() == $chosen_division ? " selected" : "";
 				$options = $options
-					. "<option value='{$division->ID}' $selected>"
-						. $division->post_title
+					. "<option value='{$division->get_id()}' $selected>"
+						. $division->get_title()
 					. "</option>";
 			}
 
