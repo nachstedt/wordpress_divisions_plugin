@@ -18,19 +18,25 @@ class dvs_LinkModification {
 	public static function register_hooks()
 	{
 		# register actions
-		add_action('admin_init', array(__CLASS__, 'admin_init'));
+		add_action('admin_init', array(__CLASS__, 'admin_init_hook'));
+		add_action('wp_trash_post', array(__CLASS__, 'wp_trash_post_hook'));
+		add_action('wp_untrash_post', array(__CLASS__, 'wp_untrash_post_hook'));
+
+		add_filter(
+			'wp_insert_post_data',
+			array(__CLASS__, 'wp_insert_post_data_filter'),
+			'99', 2);
 	}
 
 	/**
 	 * hook into WP's admin_init action hook
 	 */
-	public static function admin_init()
+	public static function admin_init_hook()
 	{
 	    if (delete_transient(self::TRANSIENT_REWRITE_FLUSH_SCHEDULED))
 		{
 			flush_rewrite_rules();
 		}
-
 	}
 
 	public static function add_division_to_url($url, $division_id)
@@ -57,5 +63,44 @@ class dvs_LinkModification {
 	public static function schedule_rewrite_rules_flush()
 	{
 		set_transient(self::TRANSIENT_REWRITE_FLUSH_SCHEDULED, TRUE);
+	}
+
+	public static function wp_insert_post_data_filter($data, $postarr)
+	{
+		if (($data['post_type'] != dvs_Division::POST_TYPE)
+			or ($data['post_status'] != 'publish')
+			or (!dvs_Settings::get_use_permalinks()))
+		{
+			return $data;
+		}
+
+		$new_post_name = $data['post_name'];
+		$division = new dvs_Division($postarr['ID']);
+		$old_post_name = $division->get_permalink_slug();
+		if (($new_post_name != $old_post_name))
+		{
+			self::schedule_rewrite_rules_flush();
+		}
+		return $data;
+	}
+
+	public static function wp_trash_post_hook($id)
+	{
+		if ((get_post_type($id) != dvs_Division::POST_TYPE)
+			or (!dvs_Settings::get_use_permalinks()))
+		{
+			return;
+		}
+		self::schedule_rewrite_rules_flush();
+	}
+
+	public static function wp_untrash_post_hook($id)
+	{
+		if ((get_post_type($id) != dvs_Division::POST_TYPE)
+			or (!dvs_Settings::get_use_permalinks()))
+		{
+			return;
+		}
+		self::schedule_rewrite_rules_flush();
 	}
 }

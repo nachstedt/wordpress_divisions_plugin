@@ -117,6 +117,7 @@ if(!class_exists('dvs_Division'))
 			if (self::$all_divisions == NULL)
 			{
 				$posts = get_posts(array(
+					'posts_per_page' => -1,
 					'post_type'      => self::POST_TYPE,
 					'post_status'    => 'publish',
 					'orderby'        => 'post_title',
