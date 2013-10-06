@@ -4,7 +4,7 @@ Donate link: http://www.nachstedt.com/
 Tags: divisions, subcategories
 Requires at least: 3.6
 Tested up to: 3.6
-Stable tag: 0.1.2
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,9 @@ as normal locations.
 
 == Changelog ==
 
+= 0.2.0 =
+* Divisions can be encoded into links as first argument of the permalink structure
+
 = 0.1.2 =
 * CSS class current_division_item is also added to menu items that have "no division" attached"
 * Divisions menu entry in admin interface is displayed after second seperator
@@ -58,6 +61,9 @@ as normal locations.
 * First published version
 
 == Upgrade Notice ==
+
+= 0.2.0 =
+Instead of attaching "?division=xx" to your URL, you may now directly alter your permalink structure!
 
 = 0.1.2 =
 Some minor improvements.
