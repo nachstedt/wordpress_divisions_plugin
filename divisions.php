@@ -25,7 +25,9 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if (!defined('TN_DIVISIONS_PLUGIN_FILE'))
+define('TN_DIVISIONS_PLUGIN_FILE', __FILE__);
+
+if (!defined('TN_DIVISIONS_PLUGIN_BASENAME'))
 {
 	define('TN_DIVISIONS_PLUGIN_BASENAME', plugin_basename(__FILE__));
 }

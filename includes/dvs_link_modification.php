@@ -15,6 +15,8 @@ class dvs_LinkModification {
 
 	const TRANSIENT_REWRITE_FLUSH_SCHEDULED = "dvs_rewrite_flush_scheduled";
 
+	private static $during_deactivation = False;
+
 	public static function register_hooks()
 	{
 		if (is_admin())
@@ -31,8 +33,24 @@ class dvs_LinkModification {
 				'wp_insert_post_data',
 				array(__CLASS__, 'wp_insert_post_data_filter'),
 				'99', 2);
+
+			register_activation_hook(
+				TN_DIVISIONS_PLUGIN_FILE,
+				array(__CLASS__, 'activation_hook'));
+			register_deactivation_hook(
+				TN_DIVISIONS_PLUGIN_FILE,
+				array(__CLASS__, 'deactivation_hook'));
 		}
 	}
+
+	public static function activation_hook()
+	{
+		if (dvs_Settings::get_use_permalinks())
+		{
+			flush_rewrite_rules();
+		}
+	}
+
 
 	/**
 	 * hook into WP's admin_init action hook
@@ -66,9 +84,22 @@ class dvs_LinkModification {
 		}
 	}
 
+	public static function deactivation_hook()
+	{
+		if (dvs_Settings::get_use_permalinks())
+		{
+			self::$during_deactivation = TRUE;
+			flush_rewrite_rules();
+		}
+	}
+
 	public static function rewrite_rules_array_filter($rules)
 	{
-		if (!dvs_Settings::get_use_permalinks()) {return $rules;}
+		if ((!dvs_Settings::get_use_permalinks())
+			or self::$during_deactivation)
+		{
+			return $rules;
+		}
 
 		$newrules = array();
 		$oldrules = array();
