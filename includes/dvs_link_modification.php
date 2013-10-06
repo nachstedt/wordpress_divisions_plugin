@@ -71,19 +71,23 @@ class dvs_LinkModification {
 		if (!dvs_Settings::get_use_permalinks()) {return $rules;}
 
 		$newrules = array();
+		$oldrules = array();
 		$divisions = dvs_Division::get_all();
 
 		foreach($rules as $key => $rule)
 		{
-			foreach($divisions as $division)
-			{
-				$url = $division->get_permalink_slug() . '/' . $key;
-				$rewrite = $rule . '&division=' . $division->get_id();
-				$newrules[$url] = $rewrite;
+			if (strpos($key, dvs_Division::POST_TYPE)!==0) {
+				$oldrules[$key] = $rule;
+				foreach($divisions as $division)
+				{
+					$url = $division->get_permalink_slug() . '/' . $key;
+					$rewrite = $rule . '&division=' . $division->get_id();
+					$newrules[$url] = $rewrite;
+				}
 			}
 		}
 
-		return $newrules + $rules;
+		return $newrules + $oldrules;
 	}
 
 	public static function schedule_rewrite_rules_flush()
