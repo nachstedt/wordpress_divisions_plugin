@@ -116,7 +116,7 @@ class dvs_LinkModification {
 		// add homepage permalinks
 		foreach  ($divisions as $division)
 		{
-			$url = $division->get_permalink_slug();
+			$url = $division->get_permalink_slug() . "$";
 			$rewrite = '/index.php?division=' . $division->get_id();
 			$newrules[$url] = $rewrite;
 		}
