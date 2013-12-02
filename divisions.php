@@ -93,6 +93,9 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 			// register filters
 			add_filter(
+				'page_link',
+				array(&$this, 'page_link_filter'));
+			add_filter(
 				'post_link',
 				array(&$this, 'post_link_filter'), 1, 2);
 			add_filter(
@@ -201,6 +204,7 @@ if(!class_exists('TN_Divisions_Plugin'))
 					$menu_item->url,
 					$division);
 			}
+			
 
 			if ($division_enabled && $division==$current_division_id)
 			{
@@ -283,6 +287,13 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 		}
 
+		public function page_link_filter($permalink_url)  {
+			if ($this->current_division==NULL) {return $permalink_url;}
+			return dvs_LinkModification::add_division_to_url(
+				$permalink_url,
+				$this->current_division->get_id());
+		}
+		
 		/**
 		 * Filter links to posts
 		 *

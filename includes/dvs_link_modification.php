@@ -92,6 +92,22 @@ class dvs_LinkModification {
 			flush_rewrite_rules();
 		}
 	}
+	
+	public static function replace_division_in_url($url, $division_id)
+	{
+		if (dvs_Settings::get_use_permalinks() 
+				&& get_option('permalink_structure'))
+		{
+
+		}
+		else
+		{
+			return add_query_arg(
+				dvs_Constants::QUERY_ARG_NAME_DIVISION,
+				$division_id,
+				$url);
+		}
+	}
 
 	public static function rewrite_rules_array_filter($rules)
 	{
