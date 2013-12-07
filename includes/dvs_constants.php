@@ -5,7 +5,7 @@ if ( !class_exists( "dvs_Constants" ) )
 
 	class dvs_Constants {
 
-		const VERSION = '0.2.1';
+		const VERSION = '0.2.2';
 		const DATABASE_VERSION_OPTION = "divisions_plugion_version";
 
 		const NAV_MENU_DIVSION_ENABLED_OPTION = 'dvs_division_enabled';
