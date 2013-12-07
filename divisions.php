@@ -193,24 +193,38 @@ if(!class_exists('TN_Divisions_Plugin'))
 				? -1
 				: $this->current_division->get_id();
 
-			$division = $division_enabled
-				? $chosen_division
-				: $current_division_id;
-
-			// chosen_division <0 means "no division"
-			if ($division >= 0)
+			if ($division_enabled)
 			{
-				$menu_item->url = dvs_LinkModification::add_division_to_url(
-					$menu_item->url,
-					$division);
+				// chosen_division <0 means "no division"
+				if ($chosen_division >= 0 && $current_division_id >=0)
+				{
+					$menu_item->url = 
+						dvs_LinkModification::replace_division_in_url(
+							$menu_item->url,
+							$chosen_division);
+				}
+				if ($chosen_division >= 0 && $current_division_id < 0)
+				{
+					$menu_item->url = 
+						dvs_LinkModification::add_division_to_url(
+							$menu_item->url,
+							$chosen_division);
+				}
+				else
+				if ($chosen_division < 0 && $current_division_id >=0)
+				{
+					$menu_item->url = 
+						dvs_LinkModification::remove_division_from_url(
+							$menu_item->url);
+				}
+				if ($chosen_division==$current_division_id)
+				{
+					$menu_item->classes[] =
+						dvs_Constants::CSS_CLASS_MENU_ITEM_CURRENT_DIVISION;
+				}
+				
 			}
-			
 
-			if ($division_enabled && $division==$current_division_id)
-			{
-				$menu_item->classes[] =
-					dvs_Constants::CSS_CLASS_MENU_ITEM_CURRENT_DIVISION;
-			}
 			return $menu_item;
 		}
 

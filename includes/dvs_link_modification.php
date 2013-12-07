@@ -93,20 +93,38 @@ class dvs_LinkModification {
 		}
 	}
 	
-	public static function replace_division_in_url($url, $division_id)
+	public static function remove_division_from_url($url)
 	{
 		if (dvs_Settings::get_use_permalinks() 
 				&& get_option('permalink_structure'))
 		{
-
+			$site_url = get_site_url();
+			$relative_url = substr($url, strlen($site_url)+1);
+			$first_slash = strpos($relative_url, '/');
+			if ($first_slash)
+			{
+				return $site_url . substr($relative_url, $first_slash);
+			}
+			else 
+			{
+				return $url;
+			}
 		}
 		else
 		{
 			return add_query_arg(
 				dvs_Constants::QUERY_ARG_NAME_DIVISION,
-				$division_id,
+				FALSE,
 				$url);
 		}
+
+		return $url;
+	}
+	
+	public static function replace_division_in_url($url, $division_id)
+	{
+		return self::add_division_to_url(
+				self::remove_division_from_url($url), $division_id);
 	}
 
 	public static function rewrite_rules_array_filter($rules)
