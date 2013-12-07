@@ -41,6 +41,15 @@ class dvs_LinkModification {
 				TN_DIVISIONS_PLUGIN_FILE,
 				array(__CLASS__, 'deactivation_hook'));
 		}
+		else
+		{
+			add_filter(
+				'page_link',
+				array(__CLASS__, 'page_link_filter'));
+			add_filter(
+				'post_link',
+				array(__CLASS__, 'post_link_filter'), 1, 2);			
+		}
 	}
 
 	public static function activation_hook()
@@ -92,6 +101,41 @@ class dvs_LinkModification {
 			flush_rewrite_rules();
 		}
 	}
+	
+	public static function page_link_filter($permalink_url)
+	{
+		global $tn_divisions_plugin;
+		$current_division = $tn_divisions_plugin->get_current_division();
+		if ($current_division==NULL) 
+		{
+			return $permalink_url;
+		}
+		return self::add_division_to_url(
+			$permalink_url,
+			$current_division->get_id());
+	}
+		
+	/**
+	 * Filter links to posts
+	 *
+	 * This method filters links to posts in page and adds the current division
+	 * as query argument
+	 *
+	 * @param string $permalink_url original post link url
+	 * @param array $post_data meta data of the linke post
+	 * @return string modified link url
+	 */
+	public static function post_link_filter($permalink_url, $post_data)  {
+		global $tn_divisions_plugin;
+		$current_division = $tn_divisions_plugin->get_current_division();
+		if ($current_division==NULL) 
+		{
+			return $permalink_url;
+		}
+		return self::add_division_to_url(
+			$permalink_url,
+			$current_division->get_id());
+	}		
 	
 	public static function remove_division_from_url($url)
 	{

@@ -93,12 +93,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 			// register filters
 			add_filter(
-				'page_link',
-				array(&$this, 'page_link_filter'));
-			add_filter(
-				'post_link',
-				array(&$this, 'post_link_filter'), 1, 2);
-			add_filter(
 					'wp_edit_nav_menu_walker',
 					array( &$this, 'wp_edit_nav_menu_walker_filter' ) );
 			add_filter(
@@ -165,6 +159,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 				}
 			}
 			update_option(dvs_Constants::DATABASE_VERSION_OPTION, $my_version);
+		}
+		
+		public function get_current_division()
+		{
+			return $this->current_division;
 		}
 
 		/**
@@ -299,30 +298,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if (!empty($division_id)) {
 				$this->current_division = new dvs_Division($division_id);
 			}
-		}
-
-		public function page_link_filter($permalink_url)  {
-			if ($this->current_division==NULL) {return $permalink_url;}
-			return dvs_LinkModification::add_division_to_url(
-				$permalink_url,
-				$this->current_division->get_id());
-		}
-		
-		/**
-		 * Filter links to posts
-		 *
-		 * This method filters links to posts in page and adds the current division
-		 * as query argument
-		 *
-		 * @param string $permalink_url original post link url
-		 * @param array $post_data meta data of the linke post
-		 * @return string modified link url
-		 */
-		public function post_link_filter($permalink_url, $post_data)  {
-			if ($this->current_division==NULL) {return $permalink_url;}
-			return dvs_LinkModification::add_division_to_url(
-				$permalink_url,
-				$this->current_division->get_id());
 		}
 
 		/**
