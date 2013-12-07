@@ -3,7 +3,7 @@
 Plugin Name: Divisions
 Plugin URI: http://www.nachstedt.com/en/divisions-wordpress-plugin-en
 Description: Create multiple divisions in your site with individual menus, sidebars and header images. Divisions may easily change share content of all types while maintaining a consistent look.
-Version: 0.2.1
+Version: 0.2.2
 Author: Timo Nachstedt
 Author URI: http://www.nachstedt.com
 License: GPL2
@@ -93,9 +93,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 
 			// register filters
 			add_filter(
-				'post_link',
-				array(&$this, 'post_link_filter'), 1, 2);
-			add_filter(
 					'wp_edit_nav_menu_walker',
 					array( &$this, 'wp_edit_nav_menu_walker_filter' ) );
 			add_filter(
@@ -163,6 +160,11 @@ if(!class_exists('TN_Divisions_Plugin'))
 			}
 			update_option(dvs_Constants::DATABASE_VERSION_OPTION, $my_version);
 		}
+		
+		public function get_current_division()
+		{
+			return $this->current_division;
+		}
 
 		/**
 		 * Filter frontend output of navigtation menu items
@@ -190,23 +192,38 @@ if(!class_exists('TN_Divisions_Plugin'))
 				? -1
 				: $this->current_division->get_id();
 
-			$division = $division_enabled
-				? $chosen_division
-				: $current_division_id;
-
-			// chosen_division <0 means "no division"
-			if ($division >= 0)
+			if ($division_enabled)
 			{
-				$menu_item->url = dvs_LinkModification::add_division_to_url(
-					$menu_item->url,
-					$division);
+				// chosen_division <0 means "no division"
+				if ($chosen_division >= 0 && $current_division_id >=0)
+				{
+					$menu_item->url = 
+						dvs_LinkModification::replace_division_in_url(
+							$menu_item->url,
+							$chosen_division);
+				}
+				if ($chosen_division >= 0 && $current_division_id < 0)
+				{
+					$menu_item->url = 
+						dvs_LinkModification::add_division_to_url(
+							$menu_item->url,
+							$chosen_division);
+				}
+				else
+				if ($chosen_division < 0 && $current_division_id >=0)
+				{
+					$menu_item->url = 
+						dvs_LinkModification::remove_division_from_url(
+							$menu_item->url);
+				}
+				if ($chosen_division==$current_division_id)
+				{
+					$menu_item->classes[] =
+						dvs_Constants::CSS_CLASS_MENU_ITEM_CURRENT_DIVISION;
+				}
+				
 			}
 
-			if ($division_enabled && $division==$current_division_id)
-			{
-				$menu_item->classes[] =
-					dvs_Constants::CSS_CLASS_MENU_ITEM_CURRENT_DIVISION;
-			}
 			return $menu_item;
 		}
 
@@ -281,23 +298,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			if (!empty($division_id)) {
 				$this->current_division = new dvs_Division($division_id);
 			}
-		}
-
-		/**
-		 * Filter links to posts
-		 *
-		 * This method filters links to posts in page and adds the current division
-		 * as query argument
-		 *
-		 * @param string $permalink_url original post link url
-		 * @param array $post_data meta data of the linke post
-		 * @return string modified link url
-		 */
-		public function post_link_filter($permalink_url, $post_data)  {
-			if ($this->current_division==NULL) {return $permalink_url;}
-			return dvs_LinkModification::add_division_to_url(
-				$permalink_url,
-				$this->current_division->get_id());
 		}
 
 		/**

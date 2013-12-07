@@ -4,7 +4,7 @@ Donate link: http://www.nachstedt.com/
 Tags: divisions, subcategories
 Requires at least: 3.6
 Tested up to: 3.6
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,11 @@ as normal locations.
 
 == Changelog ==
 
+= 0.2.2 =
+* fixed bug that always forwarded pretty permalinks to startpage
+* fixed bug that added division twice to pretty permalinks in menu
+* added method get_current_division() to plugin item for external use
+
 = 0.2.1 =
 * Division permalinks for homepages work
 * dvs_division/* permalinks are always removed from list of rewrite rules
@@ -65,6 +70,9 @@ as normal locations.
 * First published version
 
 == Upgrade Notice ==
+
+= 0.2.2 =
+Fixed severe bugs related to pretty permalinks
 
 = 0.2.1 =
 Fixed bugs related to new permalink option

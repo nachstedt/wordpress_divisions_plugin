@@ -41,6 +41,15 @@ class dvs_LinkModification {
 				TN_DIVISIONS_PLUGIN_FILE,
 				array(__CLASS__, 'deactivation_hook'));
 		}
+		else
+		{
+			add_filter(
+				'page_link',
+				array(__CLASS__, 'page_link_filter'));
+			add_filter(
+				'post_link',
+				array(__CLASS__, 'post_link_filter'), 1, 2);			
+		}
 	}
 
 	public static function activation_hook()
@@ -92,6 +101,75 @@ class dvs_LinkModification {
 			flush_rewrite_rules();
 		}
 	}
+	
+	public static function page_link_filter($permalink_url)
+	{
+		global $tn_divisions_plugin;
+		$current_division = $tn_divisions_plugin->get_current_division();
+		if ($current_division==NULL) 
+		{
+			return $permalink_url;
+		}
+		return self::add_division_to_url(
+			$permalink_url,
+			$current_division->get_id());
+	}
+		
+	/**
+	 * Filter links to posts
+	 *
+	 * This method filters links to posts in page and adds the current division
+	 * as query argument
+	 *
+	 * @param string $permalink_url original post link url
+	 * @param array $post_data meta data of the linke post
+	 * @return string modified link url
+	 */
+	public static function post_link_filter($permalink_url, $post_data)  {
+		global $tn_divisions_plugin;
+		$current_division = $tn_divisions_plugin->get_current_division();
+		if ($current_division==NULL) 
+		{
+			return $permalink_url;
+		}
+		return self::add_division_to_url(
+			$permalink_url,
+			$current_division->get_id());
+	}		
+	
+	public static function remove_division_from_url($url)
+	{
+		if (dvs_Settings::get_use_permalinks() 
+				&& get_option('permalink_structure'))
+		{
+			$site_url = get_site_url();
+			$relative_url = substr($url, strlen($site_url)+1);
+			$first_slash = strpos($relative_url, '/');
+			if ($first_slash)
+			{
+				return $site_url . substr($relative_url, $first_slash);
+			}
+			else 
+			{
+				return $url;
+			}
+		}
+		else
+		{
+			return add_query_arg(
+				dvs_Constants::QUERY_ARG_NAME_DIVISION,
+				FALSE,
+				$url);
+		}
+
+		return $url;
+	}
+	
+	public static function replace_division_in_url($url, $division_id)
+	{
+		return self::add_division_to_url(
+				self::remove_division_from_url($url), $division_id);
+	}
 
 	public static function rewrite_rules_array_filter($rules)
 	{
@@ -116,7 +194,7 @@ class dvs_LinkModification {
 		// add homepage permalinks
 		foreach  ($divisions as $division)
 		{
-			$url = $division->get_permalink_slug();
+			$url = $division->get_permalink_slug() . "$";
 			$rewrite = '/index.php?division=' . $division->get_id();
 			$newrules[$url] = $rewrite;
 		}
