@@ -44,6 +44,9 @@ class dvs_LinkModification {
 		else
 		{
 			add_filter(
+				'home_url',
+				array(__CLASS__, 'home_url_filter'));
+			add_filter(
 				'page_link',
 				array(__CLASS__, 'page_link_filter'));
 			add_filter(
@@ -102,7 +105,20 @@ class dvs_LinkModification {
 		}
 	}
 	
-	public static function page_link_filter($permalink_url)
+	public static function home_url_filter($permalink_url)
+	{
+		global $tn_divisions_plugin;
+		$current_division = $tn_divisions_plugin->get_current_division();
+		if ($current_division==NULL) 
+		{
+			return $permalink_url;
+		}
+		return self::add_division_to_url(
+			$permalink_url,
+			$current_division->get_id());
+	}
+  
+  public static function page_link_filter($permalink_url)
 	{
 		global $tn_divisions_plugin;
 		$current_division = $tn_divisions_plugin->get_current_division();
