@@ -3,7 +3,7 @@
 Plugin Name: Divisions
 Plugin URI: http://www.nachstedt.com/en/divisions-wordpress-plugin-en
 Description: Create multiple divisions in your site with individual menus, sidebars and header images. Divisions may easily change share content of all types while maintaining a consistent look.
-Version: 0.2.2
+Version: 0.2.3
 Author: Timo Nachstedt
 Author URI: http://www.nachstedt.com
 License: GPL2
@@ -107,9 +107,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 			add_filter(
 				'wp_nav_menu_objects',
 				array($this, "nav_menu_objects_filter"));
-			add_filter(
-				'term_link',
-				array($this, 'term_link_filter'));
 			add_filter(
 				'sidebars_widgets',
 				array($this, 'sidebars_widgets_filter'));
@@ -267,23 +264,6 @@ if(!class_exists('TN_Divisions_Plugin'))
 				$menus[$name] = $menu_id;
 			}
 			return $menus;
-		}
-
-		/**
-		 * Filter permalinks for taxonomy archives
-		 *
-		 * This filter adds a query arg to the generated link to maintain the
-		 * current division.
-		 *
-		 * @param string $url original link url
-		 * @return string modified link url
-		 */
-		public function term_link_filter($url)
-		{
-			if ($this->current_division==NULL) {return $url;}
-			return dvs_LinkModification::add_division_to_url(
-				$url,
-				$this->current_division->get_id());
 		}
 
 		/**
