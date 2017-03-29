@@ -105,9 +105,10 @@ class dvs_LinkModification {
 		{
 			return $permalink_url;
 		}
-		return self::add_division_to_url(
+		$new_url = self::add_division_to_url(
 			$permalink_url,
 			$current_division->get_id());
+		return $new_url;
 	}
 
   /**
