@@ -111,50 +111,6 @@ class dvs_LinkModification {
 		return $new_url;
 	}
 
-  /**
-   * @deprecated
-   * 
-   * No longer needed as home_url_filter does all the job
-   */
-  public static function page_link_filter($permalink_url)
-	{
-		global $tn_divisions_plugin;
-		$current_division = $tn_divisions_plugin->get_current_division();
-		if ($current_division==NULL) 
-		{
-			return $permalink_url;
-		}
-		return self::add_division_to_url(
-			$permalink_url,
-			$current_division->get_id());
-	}
-		
-	/**
-   * @deprecated
-   * 
-	 * Filter links to posts
-	 *
-	 * This method filters links to posts in page and adds the current division
-	 * as query argument
-	 *
-   * No longer needed as home_url_filter does all the job
-   * 
-	 * @param string $permalink_url original post link url
-	 * @param array $post_data meta data of the linke post
-	 * @return string modified link url
-	 */
-	public static function post_link_filter($permalink_url, $post_data)  {
-		global $tn_divisions_plugin;
-		$current_division = $tn_divisions_plugin->get_current_division();
-		if ($current_division==NULL) 
-		{
-			return $permalink_url;
-		}
-		return self::add_division_to_url(
-			$permalink_url,
-			$current_division->get_id());
-	}		
-	
 	public static function remove_division_from_url($url)
 	{
 		if (dvs_Settings::get_use_permalinks() 
