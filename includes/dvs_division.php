@@ -161,8 +161,15 @@ if(!class_exists('dvs_Division'))
 				self::POST_TYPE,
 				array(
 					'labels'              => array(
-						'name' => _(self::POST_NAME_PLURAL),
-						'singular_name' => _(self::POST_NAME)),
+						'name'         => __(self::POST_NAME_PLURAL, self::POST_TYPE),
+						'singular_name'=> __(self::POST_NAME, self::POST_TYPE),
+						'add_new'      => __('Add New', self::POST_TYPE),
+						'add_new_item' => __('Add New '. self::POST_NAME, self::POST_TYPE),
+						'edit_item'    => __('Edit ' . self::POST_NAME, self::POST_TYPE),
+						'new_item'     => __('New ' . self::POST_NAME, self::POST_TYPE),
+						'view_item'    => __('View ' . self::POST_NAME, self::POST_TYPE),
+						'search_items' => __('Search ' . self::POST_NAME_PLURAL, self::POST_TYPE),
+					),
 					'public'               => true,
 					'exclude_from_search'  => true,
 					'publicly_queryable'   => false,

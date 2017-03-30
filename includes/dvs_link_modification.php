@@ -44,11 +44,8 @@ class dvs_LinkModification {
 		else
 		{
 			add_filter(
-				'page_link',
-				array(__CLASS__, 'page_link_filter'));
-			add_filter(
-				'post_link',
-				array(__CLASS__, 'post_link_filter'), 1, 2);			
+				'home_url',
+				array(__CLASS__, 'home_url_filter'));						
 		}
 	}
 
@@ -80,9 +77,7 @@ class dvs_LinkModification {
 			$site_url = get_site_url();
 			$post_data = get_post($division_id, ARRAY_A);
 			$slug = $post_data['post_name'];
-			return $site_url
-				. '/' . $slug
-				. substr($url, strlen($site_url));
+			return $site_url . '/' . $slug . substr($url, strlen($site_url));
 		}
 		else
 		{
@@ -102,7 +97,7 @@ class dvs_LinkModification {
 		}
 	}
 	
-	public static function page_link_filter($permalink_url)
+	public static function home_url_filter($permalink_url)
 	{
 		global $tn_divisions_plugin;
 		$current_division = $tn_divisions_plugin->get_current_division();
@@ -110,33 +105,12 @@ class dvs_LinkModification {
 		{
 			return $permalink_url;
 		}
-		return self::add_division_to_url(
+		$new_url = self::add_division_to_url(
 			$permalink_url,
 			$current_division->get_id());
+		return $new_url;
 	}
-		
-	/**
-	 * Filter links to posts
-	 *
-	 * This method filters links to posts in page and adds the current division
-	 * as query argument
-	 *
-	 * @param string $permalink_url original post link url
-	 * @param array $post_data meta data of the linke post
-	 * @return string modified link url
-	 */
-	public static function post_link_filter($permalink_url, $post_data)  {
-		global $tn_divisions_plugin;
-		$current_division = $tn_divisions_plugin->get_current_division();
-		if ($current_division==NULL) 
-		{
-			return $permalink_url;
-		}
-		return self::add_division_to_url(
-			$permalink_url,
-			$current_division->get_id());
-	}		
-	
+
 	public static function remove_division_from_url($url)
 	{
 		if (dvs_Settings::get_use_permalinks() 
